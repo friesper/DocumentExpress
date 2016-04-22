@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <include layout="@layout/tool_bar"/>
+    <android.support.v4.widget.DrawerLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        >
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:id="@+id/send_file"
+            android:text="123123"
+            android:maxHeight="0dp"
+            android:minHeight="0dp"
+            android:maxWidth="0dp"
+            android:minWidth="0dp"
+            android:background="@drawable/send_file_button"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            />
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:id="@+id/recieve_file"
+            android:layout_below="@id/send_file"
+            android:layout_margin="30dp"
+            android:maxHeight="0dp"
+            android:minHeight="0dp"
+            android:maxWidth="0dp"
+            android:minWidth="0dp"
+            android:background="@drawable/send_file_button"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            />
+
+    </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:background="@color/whitesmoke">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/sad"
+                android:text=""
+                />
+        </LinearLayout>
+    </android.support.v4.widget.DrawerLayout>
+</LinearLayout>
