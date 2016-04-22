@@ -34,7 +34,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-
+            //hello,word
             }
             @Override
             public void onDrawerClosed(View drawerView) {
