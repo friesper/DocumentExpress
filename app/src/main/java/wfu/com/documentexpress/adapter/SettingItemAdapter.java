@@ -56,17 +56,18 @@ public class SettingItemAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View  view=null;
         ViewHolder  viewHolder;
         if(convertView==null) {
-            convertView = mInflater.inflate(R.layout.setting_item, null);
+            convertView = mInflater.from(context).inflate(R.layout.setting_item, null);
           viewHolder=new ViewHolder();
-            viewHolder.title=(TextView)view.findViewById(R.id.setting_item_text);
-            viewHolder.switchCompat=(SwitchCompat)view.findViewById(R.id.setting_item_button);
+            viewHolder.title=(TextView)convertView.findViewById(R.id.setting_item_text);
+            viewHolder.switchCompat=(SwitchCompat)convertView.findViewById(R.id.setting_item_button);
+            viewHolder.title.setText(arrayList.get(position));
             convertView.setTag(viewHolder);
         }
         else{
               viewHolder=(ViewHolder)convertView.getTag();
+            viewHolder.title.setText(arrayList.get(position));
 
         }
         return convertView;

@@ -6,7 +6,9 @@
     <include layout="@layout/tool_bar"/>
     <android.support.v4.widget.DrawerLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/drawerlayout"
+        >
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,7 +18,7 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:id="@+id/send_file"
-            android:text="123123"
+            android:text="@string/button_send_text"
             android:maxHeight="0dp"
             android:minHeight="0dp"
             android:maxWidth="0dp"
@@ -35,6 +37,7 @@
             android:minHeight="0dp"
             android:maxWidth="0dp"
             android:minWidth="0dp"
+            android:text="@string/button_recieve"
             android:background="@drawable/send_file_button"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"
@@ -46,12 +49,10 @@
             android:layout_height="match_parent"
             android:layout_gravity="left"
             android:background="@color/whitesmoke">
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/sad"
-                android:text=""
-                />
+           <ListView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:id="@+id/setting_list"></ListView>
         </LinearLayout>
     </android.support.v4.widget.DrawerLayout>
 </LinearLayout>

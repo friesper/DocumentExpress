@@ -50,12 +50,12 @@
             android:layout_height="match_parent"
             android:layout_gravity="left"
             android:background="@color/whitesmoke">
-            <Button
+            <ListView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/sad"
-                android:text=""
-                />
+                android:layout_height="wrap_content"
+                android:id="@+id/setting_list">
+
+            </ListView>
         </LinearLayout>
 
     </android.support.v4.widget.DrawerLayout>
