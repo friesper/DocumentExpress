@@ -1,22 +1,28 @@
 package wfu.com.documentexpress.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ListView;
@@ -32,6 +38,7 @@ import wfu.com.documentexpress.R;
 import wfu.com.documentexpress.adapter.FileListViewAdapter;
 import wfu.com.documentexpress.adapter.ImageViewAdapter;
 import wfu.com.documentexpress.model.SDFile;
+import wfu.com.documentexpress.utils.BitmapUtil;
 import wfu.com.documentexpress.utils.DateTransformUtil;
 import wfu.com.documentexpress.utils.FileOperation;
 import wfu.com.documentexpress.view.AnimTabsView;
@@ -40,25 +47,78 @@ import wfu.com.documentexpress.view.AnimTabsView;
  * Created by Lenovo on 2016/4/13.
  */
 public class FileChooseActivity extends FragmentActivity {
-    private static ListView fileList;
-    private static GridView imageList;
-    private static FileListViewAdapter fileAdapter;
-    private static ImageViewAdapter imageAdapter;
-    private static PackageManager pm;
-    private static Context context;
-    private static List<SDFile> applist;
-    private static List<SDFile> musiclist;
-    private static List image;
-    private static File inSd;  //内部存储
-    private static File outSd;
-    private static List<SDFile> file_list;
-    private static TextView address;
-    private static String currentPage="picture";
+    private ListView fileList;
+    private GridView imageList;
+    private FileListViewAdapter fileAdapter;
+    private ImageViewAdapter imageAdapter;
+    private PackageManager pm;
+    private Context context;
+
+    private List<SDFile> applist;
+    private List<SDFile> musiclist;
+    private List<SDFile> file_list;
+    private List<String> imagePath;
+    private List<Bitmap> image = new ArrayList<Bitmap>();
+    private File inSd;  //内部存储
+    private File outSd;
+    private TextView address;
+    private String currentPage = "picture";
+    private boolean isChice[];
+    private boolean isroot = true;
+    private List<String> choosePath;
+    private Button send;
     //当前父文件夹
     private static File currentParent;
     //当前路径下的所有文件的文件数组
     private static File[] currentFiles;
     private static final String TAG = "FileChooseMainActivity";
+    private Handler myhHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0x123:
+                    imageAdapter = new ImageViewAdapter(image, context, isChice);
+                    imageList.setAdapter(imageAdapter);
+                    break;
+                case 0x124:
+                    try {
+                        address.setText("当前路径为：" + currentParent.getCanonicalPath());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 0x125:
+                    address.setText("");
+                    break;
+
+            }
+
+        }
+    };
+
+    @Override
+    public void onBackPressed() {
+        try {
+            if (currentPage.equals("allfile")) {
+                if (address.getText().equals("")) {
+                    finish();
+                }
+                if (currentParent.getCanonicalPath().equals(Environment.getExternalStorageDirectory().getPath()) || currentParent.getCanonicalPath().equals("/storage/extSdCard")) {
+                    file_list.clear();
+                    initSDFile();
+                    fileAdapter.notifyDataSetChanged();
+                    myhHandler.sendEmptyMessage(0x125);
+                } else {
+                    currentParent = currentParent.getParentFile();
+                    currentFiles = currentParent.listFiles();
+                    infateListView(currentFiles);
+                }
+            } else {
+                finish();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,8 +132,20 @@ public class FileChooseActivity extends FragmentActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                imagePath = getImageInfo();
+                loadImageBitmap(image, imagePath);
+                isChice = new boolean[image.size()];
+                for (int i = 0; i < isChice.length; i++) {
+                    isChice[i] = false;
+                }
+                myhHandler.sendEmptyMessage(0x123);
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
                 applist = getAppInfo();
-                musiclist =getMusic();
+                musiclist = getMusic();
             }
         }).start();
         initView();
@@ -81,7 +153,49 @@ public class FileChooseActivity extends FragmentActivity {
 
     }
 
+    private void initView() {
+        pm = getPackageManager();
+        fileList = (ListView) findViewById(R.id.file_list);
+        address = (TextView) findViewById(R.id.file_address);
+        imageList = (GridView) findViewById(R.id.grid);
+        send = (Button) findViewById(R.id.file_send);
+        choosePath = new ArrayList<String>();
+        //将listview隐藏
+        setListViewVisiable(fileList, false);
+        //将path隐藏
+        setPathVisiable(address, false);
+        file_list = new ArrayList<>();
+        initSDFile();
+
+
+    }
+
+    private void initSDFile() {
+        //内部sd卡路径
+        String inPath = Environment.getExternalStorageDirectory().getPath();
+        if (inPath != null) {
+            inSd = new File(inPath);
+        }
+        SDFile root1 = FileOperation.fileToSdfile(context, inSd, "root1");
+        file_list.add(root1);
+        outSd = new File("/storage/extSdCard");
+        if (outSd.exists()) {
+            SDFile root2 = FileOperation.fileToSdfile(context, outSd, "root2");
+            file_list.add(root2);
+        }
+    }
+
     private void initEvent() {
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(choosePath.size()==0){
+                    Toast.makeText(context,"未选中任何文件",Toast.LENGTH_SHORT).show();
+                }else {
+                    Log.e("1",choosePath.toString());
+                }
+            }
+        });
         imageList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1,
@@ -92,6 +206,7 @@ public class FileChooseActivity extends FragmentActivity {
         fileList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                SDFile chooseFile;
                 CheckBox cb = (CheckBox) view.findViewById(R.id.ischeck);
                 if (cb.isChecked()) {
                     cb.setChecked(false);
@@ -103,18 +218,27 @@ public class FileChooseActivity extends FragmentActivity {
                         String path = file_list.get(i).getFileAbsAddress();
                         currentParent = new File(path);
                         if (currentParent.isFile()) {
-                            file_list.get(i).setIsCheck(true);
+                            setCheck(file_list.get(i));
+                            addChoosePathToList(file_list.get(i));
                         } else {
-                            file_list.get(i).setIsCheck(false);
                             File[] tem = currentParent.listFiles();
                             if (tem == null || tem.length == 0) {
-                                Toast.makeText(FileChooseActivity.this, "当前路径不可用", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FileChooseActivity.this, "当前路径无文件", Toast.LENGTH_SHORT).show();
                             } else {
                                 currentFiles = tem;
                                 infateListView(currentFiles);
-
                             }
                         }
+                        break;
+                    case "allmusic":
+                        chooseFile = musiclist.get(i);
+                        setCheck(chooseFile);
+                        addChoosePathToList(chooseFile);
+                        break;
+                    case "allapp":
+                        chooseFile = applist.get(i);
+                        setCheck(chooseFile);
+                        addChoosePathToList(chooseFile);
                         break;
 
                 }
@@ -122,99 +246,92 @@ public class FileChooseActivity extends FragmentActivity {
         });
     }
 
-    private void initView() {
-        pm = getPackageManager();
-        fileList = (ListView) findViewById(R.id.file_list);
-        address = (TextView) findViewById(R.id.file_address);
-        imageList = (GridView) findViewById(R.id.grid);
-        //将listview隐藏
-        setListViewVisiable(fileList, false);
-        file_list = new ArrayList<>();
-        //内部sd卡路径
-        String inPath = Environment.getExternalStorageDirectory().getPath();
-
-        if(inPath!=null) {
-            inSd = new File(inPath);
+    private void setCheck(SDFile chooseFile) {
+        if (chooseFile.isCheck()) {
+            chooseFile.setIsCheck(false);
+        } else {
+            chooseFile.setIsCheck(true);
         }
-        SDFile root1 = FileOperation.fileToSdfile(context,inSd,"root1");
-        file_list.add(root1);
-        outSd = new File("/storage/extSdCard");
-        if(outSd.exists()){
-            SDFile root2 = FileOperation.fileToSdfile(context,outSd,"root2");
-            file_list.add(root2);
-        }
-        //默认加载gridview显示图片
-        image = getImageInfo();
-        imageAdapter=new ImageViewAdapter(image, this);
-        imageList.setAdapter(imageAdapter);
-
-
     }
-    private static void setPathVisiable(TextView textView,boolean isVisiable){
-        if(isVisiable){
+
+    private void addChoosePathToList(SDFile file) {
+        if (choosePath.contains(file.getFileAbsAddress())) {
+            choosePath.remove(file.getFileAbsAddress());
+        } else {
+            choosePath.add(file.getFileAbsAddress());
+        }
+    }
+
+
+    private void loadImageBitmap(List<Bitmap> image, List<String> imagePath) {
+        for (int i = 0; i < imagePath.size(); i++) {
+            Bitmap b = BitmapUtil.decodeFile(imagePath.get(i), 120, 120);
+            image.add(b);
+        }
+    }
+
+    private void setPathVisiable(TextView textView, boolean isVisiable) {
+        if (isVisiable) {
             textView.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             textView.setVisibility(View.GONE);
         }
 
     }
 
-    private static void setListViewVisiable(ListView list,boolean isVisiable){
-        if(isVisiable){
+    private void setListViewVisiable(ListView list, boolean isVisiable) {
+        if (isVisiable) {
             list.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             list.setVisibility(View.GONE);
         }
     }
-    private static void setGridViewVisiable(GridView grid,boolean isVisiable){
-        if(isVisiable){
+
+    private void setGridViewVisiable(GridView grid, boolean isVisiable) {
+        if (isVisiable) {
             grid.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             grid.setVisibility(View.GONE);
         }
     }
 
-    private static void infateListView(File[] currentFiles) {
+    private void infateListView(File[] currentFiles) {
         file_list.clear();
-        for(int i = 0 ; i <currentFiles.length;i++){
-            if(currentFiles[i].isDirectory()){
+        for (int i = 0; i < currentFiles.length; i++) {
+            if (currentFiles[i].isDirectory()) {
                 file_list.add(FileOperation.fileToSdfile(context, currentFiles[i], "directory"));
-            }else{
-               file_list.add(FileOperation.fileToSdfile(context, currentFiles[i], "file"));
+            } else {
+                file_list.add(FileOperation.fileToSdfile(context, currentFiles[i], "file"));
             }
         }
         fileAdapter = new FileListViewAdapter(context, R.layout.file_list_item, file_list);
         fileList.setAdapter(fileAdapter);
-        try {
-            address.setText("当前路径为："+currentParent.getCanonicalPath());
-        } catch (IOException e){
-            e.printStackTrace();
-        }
+        myhHandler.sendEmptyMessage(0x124);
     }
 
-    private static void showAllFileList() {
+    private void showAllFileList() {
         fileAdapter = new FileListViewAdapter(context, R.layout.file_list_item, file_list);
         fileList.setAdapter(fileAdapter);
     }
 
-    private static void showAppList() {
+    private void showAppList() {
         fileAdapter = new FileListViewAdapter(context, R.layout.file_list_item, applist);
         fileList.setAdapter(fileAdapter);
     }
 
-    private static void showMusicList() {
+    private void showMusicList() {
         fileAdapter = new FileListViewAdapter(context, R.layout.file_list_item, musiclist);
         fileList.setAdapter(fileAdapter);
     }
 
-    private static void showPicture() {
-        imageAdapter=new ImageViewAdapter(image, context);
+    private void showPicture() {
+        imageAdapter = new ImageViewAdapter(image, context, isChice);
         imageList.setAdapter(imageAdapter);
     }
 
 
     //  查找sdcard卡上的所有图片信息
-    public  List<String> getImageInfo() {
+    public List<String> getImageInfo() {
         List<String> imagelist = new ArrayList<>();
         Cursor cursor = getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null,
@@ -222,18 +339,18 @@ public class FileChooseActivity extends FragmentActivity {
         for (int i = 0; i < cursor.getCount(); i++) {
             cursor.moveToNext();
             String url = cursor.getString(cursor
-                    .getColumnIndex(MediaStore.Images.Media.DATA));				//文件路径
+                    .getColumnIndex(MediaStore.Images.Media.DATA));                //文件路径
             imagelist.add(url);
         }
         return imagelist;
     }
 
 
-    public List<SDFile> getMusic(){
+    public List<SDFile> getMusic() {
         List<SDFile> allmusic = new ArrayList<SDFile>();
         List<String> musiclist = getMusicInfo();
 //        Log.e("1",musiclist.size()+"");
-        for (int i = 0 ; i <musiclist.size();i++){
+        for (int i = 0; i < musiclist.size(); i++) {
             SDFile music = new SDFile();
             String musicPath = musiclist.get(i);
 //            Log.e("1",musicPath);
@@ -249,7 +366,7 @@ public class FileChooseActivity extends FragmentActivity {
     }
 
     //  查找sdcard卡上的所有歌曲信息
-    public  List<String> getMusicInfo() {
+    public List<String> getMusicInfo() {
         List<String> musiclist = new ArrayList<>();
         Cursor cursor = getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
@@ -257,10 +374,10 @@ public class FileChooseActivity extends FragmentActivity {
         for (int i = 0; i < cursor.getCount(); i++) {
             cursor.moveToNext();
             String url = cursor.getString(cursor
-                    .getColumnIndex(MediaStore.Audio.Media.DATA));				//文件路径
+                    .getColumnIndex(MediaStore.Audio.Media.DATA));                //文件路径
             int isMusic = cursor.getInt(cursor
                     .getColumnIndex(MediaStore.Audio.Media.IS_MUSIC));//是否为音乐
-            if (isMusic != 0) {		//只把音乐添加到集合当中
+            if (isMusic != 0) {        //只把音乐添加到集合当中
                 musiclist.add(url);
             }
         }
@@ -268,17 +385,15 @@ public class FileChooseActivity extends FragmentActivity {
     }
 
 
-    public static List<SDFile> getAppInfo(){
+    public List<SDFile> getAppInfo() {
         List<SDFile> list = new ArrayList<SDFile>();
         List<PackageInfo> apkInfos = pm.getInstalledPackages(0);
         String name = "";
         Drawable icon;
         PackageInfo apk;
-        for (int i = 0; i < apkInfos.size(); i++ )
-        {
+        for (int i = 0; i < apkInfos.size(); i++) {
             apk = apkInfos.get(i);
-            if((apk.applicationInfo.flags& ApplicationInfo.FLAG_SYSTEM)==0)
-            {
+            if ((apk.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                 SDFile file = new SDFile();
                 name = (String) pm.getApplicationLabel(apk.applicationInfo);
                 icon = pm.getApplicationIcon(apk.applicationInfo);
@@ -286,7 +401,7 @@ public class FileChooseActivity extends FragmentActivity {
                 File apk_file = new File(path);
                 file.setName(name);
                 file.setModificationTime(DateTransformUtil.getModifyTime(apk_file.lastModified()));
-                file.setFsize(apk_file.length()+"");
+                file.setFsize(apk_file.length() + "");
                 file.setImage(((BitmapDrawable) icon).getBitmap());
                 file.setFileAbsAddress(path);
                 list.add(file);//如果非系统应用，则添加至appList
@@ -300,7 +415,8 @@ public class FileChooseActivity extends FragmentActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    @SuppressLint("ValidFragment")
+    public class PlaceholderFragment extends Fragment {
 
         private AnimTabsView mTabsView;
 
@@ -333,7 +449,7 @@ public class FileChooseActivity extends FragmentActivity {
                             //将网格布局显示，隐藏listview
                             setGridViewVisiable(imageList, true);
                             setListViewVisiable(fileList, false);
-                            setPathVisiable(address,false);
+                            setPathVisiable(address, false);
                             showPicture();
                             break;
                         case "音乐":
@@ -341,7 +457,7 @@ public class FileChooseActivity extends FragmentActivity {
                             setGridViewVisiable(imageList, false);
                             setListViewVisiable(fileList, true);
                             setPathVisiable(address, false);
-                            currentPage="allmusic";
+                            currentPage = "allmusic";
                             showMusicList();
                             break;
                         case "应用":
@@ -349,14 +465,14 @@ public class FileChooseActivity extends FragmentActivity {
                             setGridViewVisiable(imageList, false);
                             setListViewVisiable(fileList, true);
                             setPathVisiable(address, false);
-                            currentPage="allapp";
+                            currentPage = "allapp";
                             showAppList();
                             break;
                         case "全部文件":
                             setGridViewVisiable(imageList, false);
                             setListViewVisiable(fileList, true);
                             setPathVisiable(address, true);
-                            currentPage="allfile";
+                            currentPage = "allfile";
                             showAllFileList();
                             //隐藏网格布局。
                             break;

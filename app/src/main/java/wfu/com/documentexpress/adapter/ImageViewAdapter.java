@@ -20,31 +20,28 @@ import android.widget.ImageView;
 import java.util.List;
 
 import wfu.com.documentexpress.R;
-import wfu.com.documentexpress.utils.BitmapUtil;
 
 public class ImageViewAdapter extends BaseAdapter {
-    private List<String> path;
+    private List<Bitmap> image;
     private boolean isChice[];
     private Context context;
 
-    public ImageViewAdapter(List<String> path, Context context) {
-        this.path = path;
-        Log.i("hck", path.size()+"lenght");
-        isChice=new boolean[path.size()];
-        for (int i = 0; i < path.size(); i++) {
-            isChice[i]=false;
-        }
+    public ImageViewAdapter(List<Bitmap> image, Context context,boolean[] isChice) {
+        this.image = image;
+        Log.i("hck", image.size()+"lenght");
+        this.isChice = isChice;
+
         this.context = context;
     }
 
     @Override
     public int getCount() {
-        return path.size();
+        return image.size();
     }
 
     @Override
     public Object getItem(int arg0) {
-        return path.get(arg0);
+        return image.get(arg0);
     }
 
     @Override
@@ -76,7 +73,7 @@ public class ImageViewAdapter extends BaseAdapter {
 
     //主要就是下面的代码了
     private LayerDrawable getView(int post) {
-        Bitmap bitmap =  BitmapUtil.decodeFile(path.get(post),70,70);
+        Bitmap bitmap =  image.get(post);
         Bitmap bitmap2=null;
         LayerDrawable la=null;
         if (isChice[post]== true){
@@ -89,7 +86,7 @@ public class ImageViewAdapter extends BaseAdapter {
             array[1] = new BitmapDrawable(bitmap2);
             la= new LayerDrawable(array);
             la.setLayerInset(0, 0, 0, 0, 0);   //第几张图离各边的间距
-            la.setLayerInset(1, 0, 65, 65, 0);
+            la.setLayerInset(1, 0, 150, 150, 0);
         }
         else {
             Drawable[] array = new Drawable[1];

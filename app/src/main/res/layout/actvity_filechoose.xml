@@ -26,7 +26,7 @@
             android:verticalSpacing="3dp"
             android:horizontalSpacing="3dp"
             android:stretchMode="columnWidth"
-            android:numColumns="4"
+            android:numColumns="3"
             ></GridView>
         <ListView
             android:id="@+id/file_list"
@@ -35,6 +35,11 @@
         </ListView>
 
     </LinearLayout>
-
+    <Button
+        android:id="@+id/file_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="send"
+        />
 
 </LinearLayout>

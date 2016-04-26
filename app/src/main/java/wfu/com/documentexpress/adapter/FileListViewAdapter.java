@@ -25,7 +25,7 @@ public class FileListViewAdapter extends BaseAdapter {
 
     private static class ViewHolder{
         CheckBox isCheck;
-        wfu.com.documentexpress.view.RoundRectImageView appIcon;
+        RoundRectImageView appIcon;
         TextView fileName;
         TextView fileSize;
         TextView fileModifyTime;
