@@ -4,15 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
         import android.support.v4.widget.DrawerLayout;
         import android.support.v7.app.ActionBarDrawerToggle;
-        import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.Toolbar;
         import android.util.DisplayMetrics;
         import android.view.View;
 
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 
-        import java.util.ArrayList;
+import java.util.ArrayList;
 
         import wfu.com.documentexpress.R;
         import wfu.com.documentexpress.adapter.SettingItemAdapter;
@@ -21,6 +23,9 @@ public class MainActivity extends BaseActivity {
 
      private  Button  send_file=null;
       private   Button   recieve_file=null;
+        private   SwitchCompat setting_sound=null;
+    private  SwitchCompat  setting_virbration=null;
+    private Spinner  express_mod=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +64,11 @@ public class MainActivity extends BaseActivity {
         };
         mActionBarDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
-        ListView   setting_listView=(ListView)findViewById(R.id.setting_list);
+      //  ListView   setting_listView=(ListView)findViewById(R.id.setting_list);
         ArrayList<String>  arrayList=new ArrayList<String>();
         arrayList.add("设置");
-        SettingItemAdapter  settingItemAdapter  =new SettingItemAdapter(this,R.layout.setting_item,arrayList);
-        setting_listView.setAdapter(settingItemAdapter);
+       // SettingItemAdapter  settingItemAdapter  =new SettingItemAdapter(this,R.layout.setting_item,arrayList);
+       // setting_listView.setAdapter(settingItemAdapter);
         send_file=(Button)findViewById(R.id.send_file);
         recieve_file=(Button)findViewById(R.id.recieve_file);
         send_file.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +87,8 @@ public class MainActivity extends BaseActivity {
 
      }
     });
-
+        setting_sound=(SwitchCompat)findViewById(R.id.setting_sound);
+        setting_virbration=(SwitchCompat)findViewById(R.id.setting_vibration);
 
 
     }

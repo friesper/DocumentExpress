@@ -22,7 +22,6 @@ public class SettingItemAdapter extends BaseAdapter {
 
 
     private LayoutInflater mInflater;
-   private  int  number;
     private  int  ViewId;
     private   Context  context;
     private   ArrayList<String>   arrayList;
@@ -60,6 +59,7 @@ public class SettingItemAdapter extends BaseAdapter {
         if(convertView==null) {
             convertView = mInflater.from(context).inflate(R.layout.setting_item, null);
           viewHolder=new ViewHolder();
+            if(arrayList.get(position).equals(""))
             viewHolder.title=(TextView)convertView.findViewById(R.id.setting_item_text);
             viewHolder.switchCompat=(SwitchCompat)convertView.findViewById(R.id.setting_item_button);
             viewHolder.title.setText(arrayList.get(position));
@@ -68,6 +68,7 @@ public class SettingItemAdapter extends BaseAdapter {
         else{
               viewHolder=(ViewHolder)convertView.getTag();
             viewHolder.title.setText(arrayList.get(position));
+
 
         }
         return convertView;

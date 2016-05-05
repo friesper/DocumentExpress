@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="languages">
+        <item>WiFi</item>
+        <item>蓝牙 </item>
+        <item>数据流量</item>
+    </string-array>
+</resources>

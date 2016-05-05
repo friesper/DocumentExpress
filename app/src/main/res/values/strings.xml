@@ -5,4 +5,10 @@
     <string name="button_recieve">收文件</string>
     <string name="setting">设置</string>
     <string name="about">关于</string>
+    <string name="setting_file_dir">文件路径</string>
+    <string name="setting_sound">声音</string>
+    <string name="setting_language">语言</string>
+    <string  name="setting_express_mode">传输模式</string>
+    <string  name="button_exit">退出</string>
+    <string name="vibration">震动</string>
 </resources>

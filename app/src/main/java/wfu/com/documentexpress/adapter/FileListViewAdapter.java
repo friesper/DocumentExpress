@@ -86,7 +86,6 @@ public class FileListViewAdapter extends BaseAdapter {
         if(file.getFileType().equals("file")||file.getFileType().equals("")){
             viewHolder.fileSize.setText(FileSizeUtil.getAutoFileOrFilesSize(file.getFileAbsAddress()));
         }
-
         viewHolder.fileModifyTime.setText(file.getModificationTime());
 
         return view;

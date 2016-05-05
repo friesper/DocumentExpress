@@ -49,10 +49,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="left"
             android:background="@color/whitesmoke">
-           <ListView
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:id="@+id/setting_list"></ListView>
+           <include layout="@layout/setting_layout"/>
         </LinearLayout>
     </android.support.v4.widget.DrawerLayout>
 </LinearLayout>
