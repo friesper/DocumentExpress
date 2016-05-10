@@ -1,5 +1,6 @@
 package wfu.com.documentexpress.activity;
 
+import android.app.LauncherActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.os.Environment;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -28,6 +30,7 @@ public class DirChosseActivity   extends   BaseActivity {
     ListView   dir_list;
     ArrayList<File>  files;
     File  foder= Environment.getExternalStorageDirectory();
+    File   foder_now;
     Dir_choose_listview_adapter  dir_choose_listview_adapter;
 
     private Button   dir_sure;
@@ -50,14 +53,19 @@ public class DirChosseActivity   extends   BaseActivity {
         dir_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                     foder_now=(File)dir_choose_listview_adapter.getItem(position);
+                if (foder_now.isDirectory()) {
+                    foder=(File)dir_choose_listview_adapter.getItem(position);
+                    initData(foder_now);
 
+                    Log.d("Tag","foder is  Dir");
 
-                if (foder.listFiles() == null) {
-                    Toast.makeText(getApplicationContext(), "无子路径", Toast.LENGTH_LONG);
                 } else {
-                    foder = (File) dir_choose_listview_adapter.getItem(position);
+
+                    Toast.makeText(getApplicationContext(), "无子路径", Toast.LENGTH_LONG);
+                    //view.setClickable(false);
+                    Log.d("Tag","foder.isFile");
                 }
-                initData(foder);
             }
         });
 
@@ -81,7 +89,6 @@ public class DirChosseActivity   extends   BaseActivity {
     private void initData(File folder) {
         ArrayList<File> files = new ArrayList<File>();
         File[] filterFiles = folder.listFiles();
-
         if (null != filterFiles && filterFiles.length > 0) {
             files.clear();
             for (File file : filterFiles) {
@@ -96,6 +103,7 @@ public class DirChosseActivity   extends   BaseActivity {
           files  =new ArrayList<File>();
         dir_list=(ListView)findViewById(R.id.setting_dir_chosse);
          initData(foder);
+
     }
 
 
@@ -109,4 +117,5 @@ public class DirChosseActivity   extends   BaseActivity {
 
 
     }
+
 }

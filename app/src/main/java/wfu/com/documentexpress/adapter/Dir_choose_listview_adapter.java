@@ -1,5 +1,6 @@
 package wfu.com.documentexpress.adapter;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -58,6 +59,7 @@ public class Dir_choose_listview_adapter extends BaseAdapter {
             convertView= LayoutInflater.from(context).inflate(ViewId, null);
             convertView.setTag(viewHolder);
 
+
             viewHolder.file_dir=(TextView)convertView.findViewById(R.id.dir_choose_filename);
             viewHolder.file_dir_icon=(ImageView)convertView.findViewById(R.id.dir_chosse_file_icon);
 
@@ -77,12 +79,14 @@ public class Dir_choose_listview_adapter extends BaseAdapter {
                 viewHolder.file_dir_icon.setImageResource(R.drawable.folder);
                 viewHolder.file_dir.setText(file.getName());
             }
-        else  if(file.isFile())
+        else  if(file.isFile()) {
                 viewHolder.file_dir_icon.setImageResource(R.drawable.file);
                 viewHolder.file_dir.setText(file.getName());
-
-        //}
-
+               // viewHolder.file_dir.setClickable(false);
+                //viewHolder.file_dir_icon.setClickable(false);
+                convertView.setClickable(false);
+                //}
+            }
         return convertView;
     }
     class   ViewHolder{
@@ -90,6 +94,4 @@ public class Dir_choose_listview_adapter extends BaseAdapter {
         private ImageView  file_dir_icon;
 
     }
-    public void initAdapet(){
-
-    }}
+  }

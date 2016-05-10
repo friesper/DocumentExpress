@@ -1,37 +1,38 @@
 package wfu.com.documentexpress.activity;
-import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
-        import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-        import android.util.DisplayMetrics;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-
-import android.os.Bundle;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ListView;
-import android.widget.Spinner;
-
-import java.util.ArrayList;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import java.io.File;
+import java.io.IOException;
 
 import wfu.com.documentexpress.R;
-import wfu.com.documentexpress.adapter.Dir_choose_listview_adapter;
+import wfu.com.documentexpress.utils.SharepreferencesUtilSystemSettings;
 
 public class MainActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
 
-     private  Button  send_file=null;
-      private   Button   recieve_file=null;
-        private   SwitchCompat setting_sound=null;
-    private SwitchCompat setting_virbration=null;
-    private Spinner  express_mod=null;
-    private  Button setting_dir;
-
+    private  Button  send_file=null;
+    private  Button   recieve_file=null;
+    private  SwitchCompat setting_sound=null;
+    private  SwitchCompat setting_virbration=null;
+    private  TextView  show_dir;
+    public static   boolean  Vibration;
+    public  static  boolean  Sound;
+    public  static String dirPath;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -56,6 +57,19 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         /*
         * 绘制Materl  Design  的TOOLBar
         * */
+        dirPath=getApplicationContext().getPackageResourcePath()+"cahe";
+         File file=new File(dirPath);
+        if(!file.isFile()){
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.print(Application.class.getCanonicalName());
+        Log.d("Tag","+++++++"+Application.class.getCanonicalName());
+        //SharepreferencesUtilSystemSettings  sh=new SharepreferencesUtilSystemSettings(dirPath);
+        //Sound=sh.
         Toolbar  toolbar= (Toolbar) findViewById(R.id.toolbar);
         toolbar.setSubtitle(R.string.app_name);
         toolbar.setNavigationIcon(R.drawable.ic_view_headline_black_18dp);
@@ -73,16 +87,11 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         };
         mActionBarDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
-      //  ListView   setting_listView=(ListView)findViewById(R.id.setting_list);
-        ArrayList<String>  arrayList=new ArrayList<String>();
-        arrayList.add("设置");
-       // SettingItemAdapter  settingItemAdapter  =new SettingItemAdapter(this,R.layout.setting_item,arrayList);
-       // setting_listView.setAdapter(settingItemAdapter);
         send_file=(Button)findViewById(R.id.send_file);
         recieve_file=(Button)findViewById(R.id.recieve_file);
         send_file.setOnClickListener(new View.OnClickListener() {
           @Override
-          public void onClick(View v) {
+          public void onClick(View v) {//开始发送文件的Activity
               Intent  intent=new Intent(getApplicationContext(),FileChooseActivity.class);
               startActivity(intent);
 
@@ -90,19 +99,22 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         });
     recieve_file.setOnClickListener(new View.OnClickListener() {
          @Override
-        public void onClick(View v) {
+        public void onClick(View v) {  //开始接收文件的Activity
              Intent  intent=new Intent(getApplicationContext(),FileChooseActivity.class);
              startActivity(intent);
 
      }
     });
-        setting_sound=(SwitchCompat)findViewById(R.id.setting_sound);
-        setting_virbration=(SwitchCompat)findViewById(R.id.setting_vibration);
+        setting_sound=(SwitchCompat)findViewById(R.id.setting_sound);//设置中的声音开关
+        setting_virbration=(SwitchCompat)findViewById(R.id.setting_vibration);//～～～的震动开关
         setting_sound.setOnCheckedChangeListener(this);
-          setting_dir=(Button)findViewById(R.id.button_select_file_dir);
-        setting_dir.setOnClickListener(new View.OnClickListener() {
+        show_dir=(TextView)findViewById(R.id.show_dir);//显示文件默认存储路径的TextView
+       // setting_dir=(Button)findViewById(R.id.button_select_file_dir);
+        LinearLayout  select_dir=(LinearLayout)findViewById(R.id.select_dir);
+
+        select_dir.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {//选择文件的点击监听事件
 
                 Intent intent = new Intent(getApplicationContext(),DirChosseActivity.class);
 
@@ -119,8 +131,9 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     protected void onActivityResult(int  requestCode,int  resultCode,Intent data) {
         switch (requestCode) {
             case 1:
-          setting_dir.setText(  data.getStringExtra("dir_path"));
-                Log.d("Tag",data.getStringExtra("dir_path"));
+                dirPath=data.getStringExtra("dir_path");
+                show_dir.setText(  data.getStringExtra("dir_path"));
+                Log.d("Tag",dirPath);
                 break;
             default:
                 break;
@@ -132,19 +145,26 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         switch (buttonView.getId()) {
             case R.id.setting_sound:
                 Log.d("Tag","setting_sound");
-                if (setting_sound.getCompoundPaddingRight()==0) {
+                if (setting_sound.isChecked()) {
 
-                    Log.d("Tag","setting_sound_left");
+                    Log.d("Tag","setting_sound_ischeched");
+                    Sound=true;
                 }
-                else if(setting_sound.getCompoundPaddingLeft()==0) { Log.d("Tag","setting_sound_right");}
+                else  {
+                    Sound=false;
+                    Log.d("Tag","setting_sound_unischeked");}
                 break;
 
             case R.id.setting_vibration:
-                if (setting_sound.getCompoundPaddingLeft() == 1) {
+                if (setting_virbration.isChecked()) {
+                    Vibration=true;
 
                 }
+                else Vibration=false;
                 break;
         }
     }
+    @Override
+    protected  void onDestroy(){}
 
 }

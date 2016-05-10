@@ -14,15 +14,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:id="@+id/select_dir">
 
-       <Button
+       <TextView
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:text="@string/setting_file_dir"
-           android:layout_weight="1"
-           android:background="@color/whitesmoke"
-           android:id="@+id/button_select_file_dir"/>
+           android:layout_weight="2"
+           android:textSize="20dp"/>
+        <TextView
+            android:id="@+id/show_dir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="20dp"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
