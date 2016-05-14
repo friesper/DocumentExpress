@@ -2,10 +2,11 @@ package wfu.com.documentexpress.activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.os.Bundle;
-import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
-import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SwitchCompat;
@@ -33,6 +34,8 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     public static   boolean  Vibration;
     public  static  boolean  Sound;
     public  static String dirPath;
+    public static   int  LOOD =1 ;
+    public  static    PACKAGE_NAME=
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -57,7 +60,16 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         /*
         * 绘制Materl  Design  的TOOLBar
         * */
-        dirPath=getApplicationContext().getPackageResourcePath()+"cahe";
+        PackageInfo info = getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
+        int currentVersion = info.versionCode;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int lastVersion = prefs.getInt(VERSION_KEY, 0);
+        if (currentVersion > lastVersion) {
+            //如果当前版本大于上次版本，该版本属于第一次启动
+            //将当前版本写入preference中，则下次启动的时候，据此判断，不再为首次启动
+            prefs.edit().putInt(VERSION_KEY,currentVersion).commit();
+        }
+        dirPath=SharepreferencesUtilSystemSettings.SETTING;
          File file=new File(dirPath);
         if(!file.isFile()){
             try {
@@ -66,9 +78,10 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 e.printStackTrace();
             }
         }
-        System.out.print(Application.class.getCanonicalName());
-        Log.d("Tag","+++++++"+Application.class.getCanonicalName());
-        //SharepreferencesUtilSystemSettings  sh=new SharepreferencesUtilSystemSettings(dirPath);
+        if(LOOD!=1) {
+            SharepreferencesUtilSystemSettings.getValue(getApplicationContext(), "Sound", Sound);
+            SharepreferencesUtilSystemSettings.getValue(getApplicationContext(), "Vibartion", Vibration);
+        }//SharepreferencesUtilSystemSettings  sh=new SharepreferencesUtilSystemSettings(dirPath);
         //Sound=sh.
         Toolbar  toolbar= (Toolbar) findViewById(R.id.toolbar);
         toolbar.setSubtitle(R.string.app_name);
@@ -111,7 +124,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         show_dir=(TextView)findViewById(R.id.show_dir);//显示文件默认存储路径的TextView
        // setting_dir=(Button)findViewById(R.id.button_select_file_dir);
         LinearLayout  select_dir=(LinearLayout)findViewById(R.id.select_dir);
-
+        initSwitchButton();
         select_dir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {//选择文件的点击监听事件
@@ -149,22 +162,45 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
 
                     Log.d("Tag","setting_sound_ischeched");
                     Sound=true;
+                    SharepreferencesUtilSystemSettings.putValue(getApplicationContext(),"Sound",true);
                 }
                 else  {
                     Sound=false;
-                    Log.d("Tag","setting_sound_unischeked");}
+                    Log.d("Tag","setting_sound_unischeked");
+                    SharepreferencesUtilSystemSettings.putValue(getApplicationContext(),"Sound",false);
+                }
                 break;
 
             case R.id.setting_vibration:
                 if (setting_virbration.isChecked()) {
                     Vibration=true;
+                    SharepreferencesUtilSystemSettings.putValue(getApplicationContext(),"Vibration",true);
 
                 }
-                else Vibration=false;
+                else {
+                    Vibration=false;
+                    SharepreferencesUtilSystemSettings.putValue(getApplicationContext(),"Vibration",false);
+                }
                 break;
         }
     }
-    @Override
-    protected  void onDestroy(){}
 
+
+    private   void initSwitchButton  (){
+        if  (Sound==false){
+            setting_sound.setChecked(false);
+            Log.d("Tag","setting  setting_sound");
+        }
+        else  setting_sound.setClickable(true);
+        if(Vibration==false){
+            setting_virbration.setClickable(false);
+        }
+        else  setting_virbration.setChecked(true);
+    }
+    @Override
+    protected   void onDestroy(){
+        LOOD=2;
+
+
+    }
 }

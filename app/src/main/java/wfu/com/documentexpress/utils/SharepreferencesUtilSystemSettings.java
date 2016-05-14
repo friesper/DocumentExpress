@@ -9,7 +9,7 @@ import android.content.pm.ApplicationInfo;
  * Created by yinxucun on 16-5-10.
  */
 public class SharepreferencesUtilSystemSettings {
-    private    static String  SETTING= "/data/wfu.com.documentexpress/cahe";
+    public    static String  SETTING= "/data/wfu.com.documentexpress/cahe/setting.dex";
 
     public static void putValue(Context context, String key, int value) {
         SharedPreferences.Editor sp = context.getSharedPreferences(SETTING, Context.MODE_PRIVATE) .edit();
