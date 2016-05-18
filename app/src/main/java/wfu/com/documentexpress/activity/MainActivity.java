@@ -226,7 +226,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                     Log.d("debug", "setting_sound"+Vibration);
                 }
             }
-                break;
+            break;
             default:break;
         }
     }

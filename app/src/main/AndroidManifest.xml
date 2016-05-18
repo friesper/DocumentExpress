@@ -2,6 +2,17 @@
     package="wfu.com.documentexpress">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,10 +28,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.DirChosseActivity"></activity>
-        <activity android:name=".activity.FileChooseActivity">
-
-        </activity>
+        <activity android:name=".activity.DirChosseActivity"/>
+        <activity android:name=".activity.ConnectUserActivity"/>
+        <activity android:name=".activity.BaseActivity"/>
+        <activity android:name=".activity.FileChooseActivity"/>
+        <activity android:name=".libzxing.zxing.activity.CaptureActivity"/>
+        <activity android:name=".activity.WiFiConnectActivity"/>
+        <activity android:name=".activity.SendActivity"/>
+        <activity android:name=".activity.ReceiveActivity"/>
     </application>
 
 </manifest>

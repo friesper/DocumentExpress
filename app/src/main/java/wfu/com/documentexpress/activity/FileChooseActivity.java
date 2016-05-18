@@ -1,13 +1,15 @@
 package wfu.com.documentexpress.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -17,7 +19,6 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +26,14 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +41,6 @@ import wfu.com.documentexpress.R;
 import wfu.com.documentexpress.adapter.FileListViewAdapter;
 import wfu.com.documentexpress.adapter.ImageViewAdapter;
 import wfu.com.documentexpress.model.SDFile;
-import wfu.com.documentexpress.utils.BitmapUtil;
 import wfu.com.documentexpress.utils.DateTransformUtil;
 import wfu.com.documentexpress.utils.FileOperation;
 import wfu.com.documentexpress.view.AnimTabsView;
@@ -67,6 +69,7 @@ public class FileChooseActivity extends FragmentActivity {
     private boolean isroot = true;
     private List<String> choosePath;
     private Button send;
+    private LinearLayout backLayout;
     //当前父文件夹
     private static File currentParent;
     //当前路径下的所有文件的文件数组
@@ -76,7 +79,7 @@ public class FileChooseActivity extends FragmentActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0x123:
-                    imageAdapter = new ImageViewAdapter(image, context, isChice);
+                    imageAdapter = new ImageViewAdapter(imagePath, context, isChice);
                     imageList.setAdapter(imageAdapter);
                     break;
                 case 0x124:
@@ -100,24 +103,41 @@ public class FileChooseActivity extends FragmentActivity {
         try {
             if (currentPage.equals("allfile")) {
                 if (address.getText().equals("")) {
-                    finish();
-                }
-                if (currentParent.getCanonicalPath().equals(Environment.getExternalStorageDirectory().getPath()) || currentParent.getCanonicalPath().equals("/storage/extSdCard")) {
-                    file_list.clear();
-                    initSDFile();
-                    fileAdapter.notifyDataSetChanged();
-                    myhHandler.sendEmptyMessage(0x125);
-                } else {
-                    currentParent = currentParent.getParentFile();
-                    currentFiles = currentParent.listFiles();
-                    infateListView(currentFiles);
+                    showDialog();
+                }else{
+                    if (currentParent.getCanonicalPath().equals(Environment.getExternalStorageDirectory().getPath()) || currentParent.getCanonicalPath().equals("/storage/extSdCard")) {
+                        file_list.clear();
+                        initSDFile();
+                        fileAdapter.notifyDataSetChanged();myhHandler.sendEmptyMessage(0x125);
+
+                    } else {
+                        currentParent = currentParent.getParentFile();
+                        currentFiles = currentParent.listFiles();
+                        infateListView(currentFiles);
+                    }
                 }
             } else {
-                finish();
+                showDialog();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void showDialog() {
+        new AlertDialog.Builder(FileChooseActivity.this).setTitle("注意！")//设置对话框标题
+                .setMessage("您确定要取消本次传输吗？")//设置显示的内容
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {//添加确定按钮
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件
+                        finish();
+                    }
+                }).setNegativeButton("返回", new DialogInterface.OnClickListener() {//添加返回按钮
+            @Override
+            public void onClick(DialogInterface dialog, int which) {//响应事件
+                dialog.dismiss();
+            }
+        }).show();//在按键响应事件中显示此对话框
     }
 
     @Override
@@ -129,12 +149,19 @@ public class FileChooseActivity extends FragmentActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment()).commit();
         }
+        loadMessage();
+        initView();
+        initEvent();
+
+    }
+
+    private void loadMessage() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 imagePath = getImageInfo();
-                loadImageBitmap(image, imagePath);
-                isChice = new boolean[image.size()];
+//                loadImageBitmap(image, imagePath);
+                isChice = new boolean[imagePath.size()];
                 for (int i = 0; i < isChice.length; i++) {
                     isChice[i] = false;
                 }
@@ -148,9 +175,6 @@ public class FileChooseActivity extends FragmentActivity {
                 musiclist = getMusic();
             }
         }).start();
-        initView();
-        initEvent();
-
     }
 
     private void initView() {
@@ -159,6 +183,7 @@ public class FileChooseActivity extends FragmentActivity {
         address = (TextView) findViewById(R.id.file_address);
         imageList = (GridView) findViewById(R.id.grid);
         send = (Button) findViewById(R.id.file_send);
+        backLayout = (LinearLayout) findViewById(R.id.back_layout);
         choosePath = new ArrayList<String>();
         //将listview隐藏
         setListViewVisiable(fileList, false);
@@ -189,10 +214,14 @@ public class FileChooseActivity extends FragmentActivity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(choosePath.size()==0){
-                    Toast.makeText(context,"未选中任何文件",Toast.LENGTH_SHORT).show();
-                }else {
-                    Log.e("1",choosePath.toString());
+                if (choosePath.size() == 0) {
+                    Toast.makeText(context, "未选中任何文件", Toast.LENGTH_SHORT).show();
+                } else {
+//                    LogUtil.e("1", choosePath.toString());
+                    Intent intent=new Intent(context,ConnectUserActivity.class);
+                    intent.putExtra("path_list", (Serializable) choosePath);
+                    startActivity(intent);
+                    finish();
                 }
             }
         });
@@ -200,7 +229,19 @@ public class FileChooseActivity extends FragmentActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1,
                                     int position, long arg3) {
+                CheckBox cb = (CheckBox) arg1.findViewById(R.id.img_checked);
+                if (cb.isChecked()) {
+                    cb.setChecked(false);
+                } else {
+                    cb.setChecked(true);
+                }
                 imageAdapter.chiceState(position);
+                if (choosePath.contains(imagePath.get(position))) {
+                    choosePath.remove(imagePath.get(position));
+                } else {
+                    choosePath.add(imagePath.get(position));
+                }
+
             }
         });
         fileList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -244,6 +285,15 @@ public class FileChooseActivity extends FragmentActivity {
                 }
             }
         });
+
+        backLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(context, MainActivity.class));
+                finish();
+            }
+
+        });
     }
 
     private void setCheck(SDFile chooseFile) {
@@ -262,13 +312,6 @@ public class FileChooseActivity extends FragmentActivity {
         }
     }
 
-
-    private void loadImageBitmap(List<Bitmap> image, List<String> imagePath) {
-        for (int i = 0; i < imagePath.size(); i++) {
-            Bitmap b = BitmapUtil.decodeFile(imagePath.get(i), 120, 120);
-            image.add(b);
-        }
-    }
 
     private void setPathVisiable(TextView textView, boolean isVisiable) {
         if (isVisiable) {
@@ -325,7 +368,7 @@ public class FileChooseActivity extends FragmentActivity {
     }
 
     private void showPicture() {
-        imageAdapter = new ImageViewAdapter(image, context, isChice);
+        imageAdapter = new ImageViewAdapter(imagePath, context, isChice);
         imageList.setAdapter(imageAdapter);
     }
 
@@ -359,7 +402,8 @@ public class FileChooseActivity extends FragmentActivity {
             music.setFsize(tempMusic.length() + "");
             music.setModificationTime(DateTransformUtil.getModifyTime(tempMusic.lastModified()));
             music.setFileAbsAddress(tempMusic.getAbsolutePath());
-            music.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.music));
+            music.setFileType("music");
+//            music.setImage(BitmapUtil.comp(BitmapFactory.decodeResource(getResources(), R.drawable.music)));
             allmusic.add(music);
         }
         return allmusic;
@@ -443,13 +487,13 @@ public class FileChooseActivity extends FragmentActivity {
                 public void onChange(AnimTabsView tabsView, int oldPosition, int currentPosition) {
                     TextView textView = (TextView) tabsView.getItemView(oldPosition).findViewById(R.id.current_type);
                     String type = textView.getText().toString();
-                    System.out.println(type);
                     switch (type) {
                         case "图片":
                             //将网格布局显示，隐藏listview
                             setGridViewVisiable(imageList, true);
                             setListViewVisiable(fileList, false);
                             setPathVisiable(address, false);
+                            currentPage = "picture";
                             showPicture();
                             break;
                         case "音乐":

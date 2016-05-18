@@ -1,6 +1,8 @@
 package wfu.com.documentexpress.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +24,11 @@ public class FileListViewAdapter extends BaseAdapter {
     private List<SDFile> fileList;
     private int resourceId;
     private Context context;
+    private Bitmap musicIcon;
 
     private static class ViewHolder{
         CheckBox isCheck;
-        RoundRectImageView appIcon;
+        wfu.com.documentexpress.view.RoundRectImageView appIcon;
         TextView fileName;
         TextView fileSize;
         TextView fileModifyTime;
@@ -35,6 +38,7 @@ public class FileListViewAdapter extends BaseAdapter {
         resourceId = ViewResourceId;
         fileList = objects;
         this.context = context;
+        musicIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.music);
     }
     @Override
     public int getCount() {
@@ -84,8 +88,17 @@ public class FileListViewAdapter extends BaseAdapter {
         viewHolder.appIcon.setImageBitmap(file.getImage());
         viewHolder.fileName.setText(file.getName());
         if(file.getFileType().equals("file")||file.getFileType().equals("")){
+            viewHolder.fileSize.setVisibility(View.VISIBLE);
             viewHolder.fileSize.setText(FileSizeUtil.getAutoFileOrFilesSize(file.getFileAbsAddress()));
+        }else{
+            viewHolder.fileSize.setVisibility(View.INVISIBLE);
         }
+        if(file.getFileType().equals("music")){
+            viewHolder.appIcon.setImageBitmap(musicIcon);
+        }else{
+            viewHolder.appIcon.setImageBitmap(file.getImage());
+        }
+
         viewHolder.fileModifyTime.setText(file.getModificationTime());
 
         return view;
