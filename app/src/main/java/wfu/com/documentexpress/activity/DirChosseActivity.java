@@ -62,9 +62,6 @@ public class DirChosseActivity   extends   BaseActivity {
 
                 } else {
 
-                    Toast.makeText(getApplicationContext(), "无子路径", Toast.LENGTH_LONG);
-                    //view.setClickable(false);
-                    Log.d("Tag","foder.isFile");
                 }
             }
         });

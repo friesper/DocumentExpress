@@ -1,6 +1,9 @@
 package wfu.com.documentexpress.activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.ContactsContract;
@@ -38,7 +41,9 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     public  static  boolean  Sound;
     public  static String dirPath;
     public static  String  express_mode;
+    public  boolean   NFC_ENABLE;
     private Spinner  spinner=null;
+    public NfcManager manager=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -141,6 +146,19 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
 
             }
         });
+        manager=(NfcManager)getSystemService(Context.NFC_SERVICE);
+        NfcAdapter  nfcAdapter=manager.getDefaultAdapter();
+        if(adapter==null){
+            NFC_ENABLE=false;
+            Toast.makeText(this,"NFC功能不存在",Toast.LENGTH_LONG);
+        }
+        else if(!adapter.isEnabled(0)){
+            NFC_ENABLE=false;{
+                Toast.makeText(this,"NFC功能未开启",Toast.LENGTH_LONG);
+            }
+
+        }
+        else  NFC_ENABLE=true;
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
