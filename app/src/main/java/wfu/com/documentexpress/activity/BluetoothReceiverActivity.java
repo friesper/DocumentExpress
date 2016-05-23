@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import wfu.com.documentexpress.R;
 
@@ -28,5 +29,6 @@ public class BluetoothReceiverActivity extends Activity {
             intent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
             startActivity(intent);
         }
+
     }
 }
