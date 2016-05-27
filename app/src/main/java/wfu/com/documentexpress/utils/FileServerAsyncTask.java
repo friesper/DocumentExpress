@@ -57,7 +57,7 @@ public class FileServerAsyncTask extends AsyncTask {
                 serverSocket.close();
                 return f.getAbsolutePath();
             } catch (IOException e) {
-                Log.e(WiFiDirectActivity.TAG, e.getMessage());
+                Log.e("das", e.getMessage());
                 return null;
             } catch (IOException e) {
                 e.printStackTrace();
