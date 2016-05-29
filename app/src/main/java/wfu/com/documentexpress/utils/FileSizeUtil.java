@@ -119,7 +119,7 @@ public class FileSizeUtil {
      */
 
 
-    private static String FormetFileSize(long fileS)
+    public static String FormetFileSize(long fileS)
 
 
     {

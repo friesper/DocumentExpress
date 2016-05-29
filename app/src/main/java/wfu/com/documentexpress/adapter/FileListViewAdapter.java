@@ -28,7 +28,7 @@ public class FileListViewAdapter extends BaseAdapter {
 
     private static class ViewHolder{
         CheckBox isCheck;
-        wfu.com.documentexpress.view.RoundRectImageView appIcon;
+        RoundRectImageView appIcon;
         TextView fileName;
         TextView fileSize;
         TextView fileModifyTime;
@@ -87,7 +87,7 @@ public class FileListViewAdapter extends BaseAdapter {
         }
         viewHolder.appIcon.setImageBitmap(file.getImage());
         viewHolder.fileName.setText(file.getName());
-        if(file.getFileType().equals("file")||file.getFileType().equals("")){
+        if(file.getFileType().equals("file")||file.getFileType().equals("")||file.getFileType().equals("music")){
             viewHolder.fileSize.setVisibility(View.VISIBLE);
             viewHolder.fileSize.setText(FileSizeUtil.getAutoFileOrFilesSize(file.getFileAbsAddress()));
         }else{
