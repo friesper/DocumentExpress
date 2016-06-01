@@ -195,7 +195,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         recieve_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {  //开始接收文件的Activity
-                Intent  intent=new Intent(getApplicationContext(),FileChooseActivity.class);
+                Intent  intent=new Intent(getApplicationContext(),ReceiveActivity.class);
                 startActivity(intent);
 
             }

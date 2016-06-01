@@ -36,9 +36,13 @@
         <activity android:name=".activity.FileChooseActivity"/>
         <activity android:name=".libzxing.zxing.activity.CaptureActivity"/>
         <activity android:name=".activity.WiFiConnectActivity"/>
-        <activity android:name=".activity.SendActivity"/>
+        <activity android:name=".activity.SendActivity">
+            <intent-filter><action android:name="SEND_FILE"/>
+                <category android:name="android.intent.category.DEFAULT"/></intent-filter>
+        </activity>
         <activity android:name=".activity.ReceiveActivity"/>
         <activity android:name=".activity.WifiDriectExpressActivity"/>
+
     </application>
 
 </manifest>

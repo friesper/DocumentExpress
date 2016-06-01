@@ -26,6 +26,7 @@ import wfu.com.documentexpress.R;
 import wfu.com.documentexpress.adapter.FileUpdateAdapter;
 import wfu.com.documentexpress.model.FileUpdate;
 import wfu.com.documentexpress.socketoperation.Constant;
+import wfu.com.documentexpress.utils.ActivityCollector;
 import wfu.com.documentexpress.utils.FileSizeUtil;
 import wfu.com.documentexpress.utils.LogUtil;
 
@@ -78,6 +79,11 @@ public class SendActivity extends BaseActivity {
             }
         }).start();
 
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+    
     }
 
     private void initView() {
@@ -201,4 +207,5 @@ public class SendActivity extends BaseActivity {
         startActivity(new Intent(getApplicationContext(),MainActivity.class));
         finish();
     }
+
 }
