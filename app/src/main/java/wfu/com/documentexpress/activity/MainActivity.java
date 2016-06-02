@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import wfu.com.documentexpress.R;
 import wfu.com.documentexpress.utils.SharepreferencesUtilSystemSettings;
+import wfu.com.documentexpress.utils.WIFIDirectBroadCastReceiver;
 
 public class MainActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
 
@@ -195,7 +196,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         recieve_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {  //开始接收文件的Activity
-                Intent  intent=new Intent(getApplicationContext(),ReceiveActivity.class);
+                Intent  intent=new Intent(getApplicationContext(),WiFiDirectReceiverActivity.class);
                 startActivity(intent);
 
             }

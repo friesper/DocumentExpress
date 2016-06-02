@@ -29,6 +29,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+        <activity android:name=".activity.MainActivityt">
+
         </activity>
         <activity android:name=".activity.DirChosseActivity"/>
         <activity android:name=".activity.ConnectUserActivity"/>
@@ -37,11 +41,12 @@
         <activity android:name=".libzxing.zxing.activity.CaptureActivity"/>
         <activity android:name=".activity.WiFiConnectActivity"/>
         <activity android:name=".activity.SendActivity">
-            <intent-filter><action android:name="SEND_FILE"/>
-                <category android:name="android.intent.category.DEFAULT"/></intent-filter>
+
         </activity>
         <activity android:name=".activity.ReceiveActivity"/>
+        <activity android:name=".activity.WiFiDirectReceiverActivity" />
         <activity android:name=".activity.WifiDriectExpressActivity"/>
+        <activity android:name=".activity.WifiDirectSendActivity"/>
 
     </application>
 

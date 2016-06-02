@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -47,8 +48,7 @@ public class WifiDriectExpressActivity extends Activity {
     private WifiP2pInfo info;
     IntentFilter mIntentFilter;
     WIFIDirectBroadCastReceiver wifiDiretBroadcastReceiver=  null;
-    WifiP2pManager.PeerListListener  peerListListener;
-    public   boolean    flag;
+    public   boolean    flag=false;
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,7 @@ public class WifiDriectExpressActivity extends Activity {
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
        // String  Mac_Dress=intent.getStringExtra("MacDress");
          initReceiver();
-       new Thread(new Runnable() {
+       /*new Thread(new Runnable() {
             @Override
             public void run() {
                 Discover();
@@ -80,7 +80,7 @@ public class WifiDriectExpressActivity extends Activity {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        }).start();*/
 
 
         Discover();
@@ -89,16 +89,13 @@ public class WifiDriectExpressActivity extends Activity {
 
     private void ExpressFile() {
 
-        if(info.groupOwnerAddress.getHostAddress()!=null) {
+
             Intent serviceIntent = getIntent();
-            serviceIntent.putExtra("targetIp",
-                    info.groupOwnerAddress.getHostAddress());
-            Log.d("debug","no IP");
-            //serviceIntent.putExtra("port",
-            //         8988);
-            serviceIntent.setAction("SEND_FILE");
+
+            serviceIntent.setClass(this,WifiDirectSendActivity.class);
             startActivity(serviceIntent);
-        }
+            this.onPause();
+
 
 
     }
@@ -108,7 +105,11 @@ public class WifiDriectExpressActivity extends Activity {
         super.onDestroy();
         unregisterReceiver(wifiDiretBroadcastReceiver);
     }
-    private void BeGroupOwener() {
+    private  void  initReceiver(){
+        final String Mac_Dress = "66:cc:2e:a2:16:dd";
+
+        wifiP2pManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+        mChannel = wifiP2pManager.initialize(this, Looper.myLooper(), null);
         wifiP2pManager.removeGroup(mChannel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -121,36 +122,14 @@ public class WifiDriectExpressActivity extends Activity {
 
             }
         });
-        wifiP2pManager.createGroup(mChannel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.d("debug","createGroupSuccess");
-
-            }
-
-            @Override
-            public void onFailure(int reason) {
-                Log.d("debug","create Group failed");
-            }
-        });
-    }
-    private  void  initReceiver(){
-        final String Mac_Dress = "28:e3:1f:a6:1e:59";
-
-        wifiP2pManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        mChannel = wifiP2pManager.initialize(this, Looper.myLooper(), null);
         WifiP2pManager.PeerListListener mpeerListListener = new WifiP2pManager.PeerListListener() {
             @Override
             public void onPeersAvailable(WifiP2pDeviceList wifiP2pDeviceList) {
-                BeGroupOwener();
-                CreateConnect(Mac_Dress);
-                Log.d("debug","connect+++");
-                NetworkInfo  networkInfo=getIntent().getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
-            /*    if(networkInfo.isConnected())
-                if(info.groupFormed&&info.isGroupOwner) {
-                    Log.d("debug", info.groupOwnerAddress.getHostAddress());
-                }*/
-               // ExpressFile();
+                for(int  i=3;i>0;i++) {
+                    CreateConnect(Mac_Dress);
+                    Log.d("debug", "connect+++");
+                }
+
 
             }
 
@@ -160,8 +139,11 @@ public class WifiDriectExpressActivity extends Activity {
             @Override
             public void onConnectionInfoAvailable( final  WifiP2pInfo wifiP2pInfo) {
                 Log.d("debug","infoAcailable is on");
-               // info=wifiP2pInfo;
-            }
+                flag=false;
+
+                    ExpressFile();
+                }
+
         };
 
 
@@ -169,24 +151,14 @@ public class WifiDriectExpressActivity extends Activity {
         wifiDiretBroadcastReceiver = new WIFIDirectBroadCastReceiver(wifiP2pManager, mChannel,this, mpeerListListener, infoListener);
         registerReceiver(wifiDiretBroadcastReceiver, mIntentFilter);
     }
-    private boolean CreateConnect(String address) {
+    private void CreateConnect(String address) {
         WifiP2pConfig config = new WifiP2pConfig();
-        Log.i("xyz", address);
+        Log.i("debug", address);
 
         config.deviceAddress = address;
         /*mac地址*/
 
-        //config.wps.setup = WpsInfo.PBC;
-        Log.i("debug", "MAC IS " + address);
-        if (address.equals("9a:ff:d0:23:85:97")) {
-            config.groupOwnerIntent = 0;
-            Log.i("address", "lingyige shisun");
-        }
-        if (address.equals("36:80:b3:e8:69:a6")) {
-            config.groupOwnerIntent = 15;
-            Log.i("address", "lingyigeshiwo");
 
-        }
 
         Log.i("debug", "lingyige youxianji" + String.valueOf(config.groupOwnerIntent));
 
@@ -194,26 +166,26 @@ public class WifiDriectExpressActivity extends Activity {
 
             @Override
             public void onSuccess() {
-                flag=true;
+                Log.d("debug","connect success");
             }
 
             @Override
             public void onFailure(int reason) {
-                flag=false;
+                Log.d("debug","connect failed");
 
             }
         });
-    return flag;
     }
     private  void  Discover(){
         wifiP2pManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-
+            Log.d("debug","Discover success");
             }
 
             @Override
             public void onFailure(int i) {
+                Log.d("debug","Discover failed");
 
             }
         });

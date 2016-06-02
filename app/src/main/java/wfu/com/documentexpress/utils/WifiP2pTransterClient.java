@@ -1,13 +1,11 @@
-package wfu.com.documentexpress.activity;
+package wfu.com.documentexpress.utils;
 
-import android.content.Intent;
-import android.os.Bundle;
+import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.BufferedInputStream;
@@ -27,96 +25,43 @@ import wfu.com.documentexpress.R;
 import wfu.com.documentexpress.adapter.FileUpdateAdapter;
 import wfu.com.documentexpress.model.FileUpdate;
 import wfu.com.documentexpress.socketoperation.Constant;
-import wfu.com.documentexpress.utils.ActivityCollector;
-import wfu.com.documentexpress.utils.FileSizeUtil;
-import wfu.com.documentexpress.utils.LogUtil;
 
 /**
- * Created by Lenovo on 2016/5/9.
+ * Created by yinxucun on 16-6-2.
  */
-public class SendActivity extends BaseActivity {
-    //发送文件的activity，包括发送文件的socket
-    private LinearLayout cancleTrans;
-    private ListView transList;
-    private Button interrupt_trans;
-    private TextView title;
-    private List<FileUpdate> transFiles;
-    private FileUpdateAdapter adapter;
-
-    private String targetIp;
-    private String progress = null;
-    private List<String> path_list;
+public class WifiP2pTransterClient {
     private static ArrayList<String> fileList = new ArrayList<String>();
-    private Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 0x126:
-                    adapter.notifyDataSetChanged();
-                    break;
-                case 0x127:
-                    title.setText("发送完成");
-                    adapter.notifyDataSetChanged();
-                    interrupt_trans.setText("继续发送");
-                   interrupt_trans.setBackgroundColor(getResources().getColor(R.color.custom));
-                    break;
+
+
+    /**
+     * 带参数的构造器，用户设定需要传送文件的文件夹
+     */
+    public WifiP2pTransterClient(List<String>   alist){
+
+            for(String file_name:alist){
+        getFilePath(file_name);
             }
-        }
-    };
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sendfile);
-        initView();
-        Log.d("debug","initView");
-        initEvent();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if(targetIp!=null){
-                    LogUtil.e("0", targetIp);
-                    Log.d("debug","Tjhread+++");
-                    service(targetIp);
-                }
-            }
-        }).start();
-
-    }
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-    
     }
 
-    private void initView() {
-        cancleTrans = (LinearLayout) findViewById(R.id.cancle_file_filesendlayout);
-        transList = (ListView) findViewById(R.id.transing_filelist);
-        interrupt_trans = (Button) findViewById(R.id.interrupt_trans);
-        title = (TextView) findViewById(R.id.trans_title);
-        transFiles = new ArrayList<FileUpdate>();
-        adapter = new FileUpdateAdapter(SendActivity.this,R.layout.file_progress_item,transFiles);
-        transList.setAdapter(adapter);
-    }
+    /**
+     * 不带参数的构造器。使用默认的传送文件的文件夹
+     */
 
-    private void initEvent() {
-        Intent intent=getIntent();
-        fileList.clear();
-        path_list = (List<String>)intent.getSerializableExtra("path_list");
-        targetIp = intent.getStringExtra("targetIp");
-        for(int i = 0 ; i < path_list.size() ;i++){
-            fileList.add(path_list.get(i));
-        }
-
-    }
-
-    public void service(String ip){
+    public void service(){
         ExecutorService executorService = Executors.newCachedThreadPool();
         Vector<Integer> vector = getRandom(fileList.size());
         for(Integer integer : vector){
             String filePath = fileList.get(integer.intValue());
-            executorService.execute(sendFile(filePath,ip));
+            executorService.execute(sendFile(filePath));
         }
+    }
+
+
+    private void getFilePath(String dirPath){
+
+                fileList.add(dirPath);
+
+
     }
 
     private Vector<Integer> getRandom(int size){
@@ -133,25 +78,22 @@ public class SendActivity extends BaseActivity {
         return v;
     }
 
-
-    private  Runnable sendFile(final String filePath,final String targetIp){
+    private  Runnable sendFile(final String filePath){
         return new Runnable(){
 
             private Socket socket = null;
-            private String ip =targetIp;
+            private String ip ="192.168.49.1";
             private int port = Constant.DEFAULT_BIND_PORT;
-            FileUpdate transfile = new FileUpdate();
+
             public void run() {
-                Log.d("debug","开始发送文件");
                 System.out.println("开始发送文件:" + filePath);
                 File file = new File(filePath);
+                FileUpdate transfile = new FileUpdate();
                 transfile.setPath(filePath);
                 transfile.setName(file.getName());
                 transfile.setTotalSize("/" + FileSizeUtil.FormetFileSize(file.length()));
-                transFiles.add(transfile);
-
+                //transFiles.add(transfile);
                 if(createConnection()){
-                    Log.d("debug","transfile");
                     int bufferSize = 8192;
                     byte[] buf = new byte[bufferSize];
                     try {
@@ -169,10 +111,10 @@ public class SendActivity extends BaseActivity {
                         long startTime = System.currentTimeMillis(); // 开始下载时获取开始时间
                         while ((read = fis.read(buf)) != -1) {
                             passedlen += read;
+                            Log.d("debug","已经完成文件 [" + file.getName() + "]百分比: " + passedlen * 100L/ length + "%");
                             dos.write(buf, 0, read);
                             transfile.setCurrentSize(FileSizeUtil.FormetFileSize(passedlen));
                             transfile.setCurrentProgress((int) (passedlen * 100L / length));
-                            handler.sendEmptyMessage(0x126);
                         }
                         long curTime = System.currentTimeMillis();
                         int usedTime = (int) ((curTime-startTime)/1000);
@@ -180,12 +122,10 @@ public class SendActivity extends BaseActivity {
                         double downloadSpeed = (passedlen / usedTime) / 1024/1024; // 下载速度
                         transfile.setCurrentSpeed(downloadSpeed+"M/S");
                         dos.flush();
-                        dos.flush();
                         fis.close();
                         dos.close();
                         socket.close();
-                        handler.sendEmptyMessage(0x127);
-                        System.out.println("文件 " + filePath + "传输完成!");
+                        Log.d("debug","文件 " + filePath + "传输完成!");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -195,12 +135,10 @@ public class SendActivity extends BaseActivity {
             private boolean createConnection() {
                 try {
                     socket = new Socket(ip, port);
-                    Log.d("debug","连接服务器成功");
                     System.out.println("连接服务器成功！");
                     return true;
                 } catch (Exception e) {
                     System.out.println("连接服务器失败！");
-                    Log.d("debug","连接服务器失败");
                     return false;
                 }
             }
@@ -208,11 +146,5 @@ public class SendActivity extends BaseActivity {
         };
     }
 
-
-    @Override
-    public void onBackPressed() {
-        startActivity(new Intent(getApplicationContext(),MainActivity.class));
-        finish();
-    }
 
 }
