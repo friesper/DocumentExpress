@@ -9,7 +9,6 @@ import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
@@ -18,30 +17,17 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import wfu.com.documentexpress.R;
 import wfu.com.documentexpress.adapter.FileUpdateAdapter;
 import wfu.com.documentexpress.model.FileUpdate;
-import wfu.com.documentexpress.socketoperation.AcceptScanOk;
 import wfu.com.documentexpress.socketoperation.Constant;
-import wfu.com.documentexpress.utils.FileSizeUtil;
-import wfu.com.documentexpress.utils.LogUtil;
+import wfu.com.documentexpress.utils.TransterServer;
 import wfu.com.documentexpress.utils.WIFIDirectBroadCastReceiver;
-import wfu.com.documentexpress.utils.WifiP2pTransterServer;
 import wfu.com.documentexpress.view.WaitDialog;
-import wfu.com.documentexpress.wifioperation.WifiAdmin;
 
 /**
  * Created by yinxucun on 16-5-31.
@@ -56,7 +42,6 @@ public class WiFiDirectReceiverActivity extends Activity {
     private final int POOL_SIZE = 4;//单个CPU的线程池大小
 
     private List<FileUpdate> transFiles;
-    private WifiAdmin wifiAdmin;
     private WaitDialog waitDialog;
     private FileUpdateAdapter adapter;
     private ListView transList;
@@ -84,6 +69,7 @@ public class WiFiDirectReceiverActivity extends Activity {
                     break;
                 case 0x128:
                     waitDialog.dismiss();
+                    adapter.notifyDataSetChanged();
                     break;
                 case 0x129:
                     title.setText("接收完成");
@@ -99,15 +85,15 @@ public class WiFiDirectReceiverActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recefile);
+        initView();
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-        initView();
         initReceiver();
-        Discover();
 
+        Discover();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -116,37 +102,30 @@ public class WiFiDirectReceiverActivity extends Activity {
                 String recevicePath = Environment.getExternalStorageDirectory().getPath()+"/";
                 myhandler.sendEmptyMessage(0x127);
                 while(!wifip2pconnect){
-                    Log.d("debug","while");
 
                 }
                 myhandler.sendEmptyMessage(0x128);
                 Log.d("debug","myhandler");try {
-                    WifiP2pTransterServer  wifiP2pTransterServer=new WifiP2pTransterServer( Constant.DEFAULT_BIND_PORT,recevicePath);
+                    TransterServer wifiP2pTransterServer=new TransterServer( Constant.DEFAULT_BIND_PORT,recevicePath,transFiles,myhandler);
                     wifiP2pTransterServer.service();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-
-
             }
         }).start();
-
-
-
     }
 
     private void initView() {
         title = (TextView) findViewById(R.id.trans_title);
         interrupt_trans = (Button) findViewById(R.id.interrupt_trans);
         transList = (ListView) findViewById(R.id.transing_filelist);
-        wifiAdmin = new WifiAdmin(WiFiDirectReceiverActivity.this);
         waitDialog = new WaitDialog(WiFiDirectReceiverActivity.this);
         waitDialog.setContent("正在连接...");
         transFiles = new ArrayList<FileUpdate>();
         Log.d("debug","initView");
         adapter = new FileUpdateAdapter(WiFiDirectReceiverActivity.this,R.layout.file_progress_item,transFiles);
         transList.setAdapter(adapter);
+        transFiles.clear();
     }
 
     private  void  initReceiver(){
@@ -168,10 +147,10 @@ public class WiFiDirectReceiverActivity extends Activity {
 
             }
         });
+        BeGroupOwener();
         WifiP2pManager.PeerListListener mpeerListListener = new WifiP2pManager.PeerListListener() {
             @Override
             public void onPeersAvailable(WifiP2pDeviceList wifiP2pDeviceList) {
-                BeGroupOwener();
                // CreateConnect(Mac_Dress);
                 Log.d("debug","connect+++");
 
@@ -201,16 +180,11 @@ public class WiFiDirectReceiverActivity extends Activity {
 
     }
     // 是否连接WIFI
-
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
-
     //IP转换
-
     private void BeGroupOwener() {
 
         wifiP2pManager.createGroup(mChannel, new WifiP2pManager.ActionListener() {
@@ -249,9 +223,21 @@ public class WiFiDirectReceiverActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+        wifiP2pManager.clearLocalServices(mChannel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(int i) {
+
+            }
+        });
         unregisterReceiver(wifiDiretBroadcastReceiver);
-        finish();
+        transFiles.clear();
+        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+        onDestroy();
     }
     private  void  Discover(){
         wifiP2pManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {

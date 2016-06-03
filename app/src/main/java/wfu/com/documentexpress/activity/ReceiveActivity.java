@@ -97,7 +97,11 @@ public class ReceiveActivity extends BaseActivity {
                 wifiAdmin.addNetwork(wifiAdmin.CreateWifiInfo(ssid, password, 3));
                 String recevicePath = Environment.getExternalStorageDirectory().getPath()+"/";
                 myhandler.sendEmptyMessage(0x127);
-                while(!isWifiConnected(ReceiveActivity.this)){}
+                while(!isWifiConnected(ReceiveActivity.this)){
+
+
+
+                }
                 myhandler.sendEmptyMessage(0x128);
                 targetIp = intToIp(wifiAdmin.getDhcpInfo().serverAddress);
                 LogUtil.e("1", targetIp);

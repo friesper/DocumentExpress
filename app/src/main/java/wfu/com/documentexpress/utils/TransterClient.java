@@ -29,30 +29,40 @@ import wfu.com.documentexpress.socketoperation.Constant;
 /**
  * Created by yinxucun on 16-6-2.
  */
-public class WifiP2pTransterClient {
+public class TransterClient {
     private static ArrayList<String> fileList = new ArrayList<String>();
-
+    private List<FileUpdate> transFiles;
+    private   boolean  transFile_flag=false;
+    private   Handler  handler;
 
     /**
      * 带参数的构造器，用户设定需要传送文件的文件夹
      */
-    public WifiP2pTransterClient(List<String>   alist){
+    public TransterClient(List<String>   alist, List<FileUpdate> transFiles,Handler handler){
 
             for(String file_name:alist){
         getFilePath(file_name);
             }
+        this.transFiles=transFiles;
+        this.handler=handler;
     }
 
     /**
      * 不带参数的构造器。使用默认的传送文件的文件夹
      */
 
-    public void service(){
+    public boolean service(){
         ExecutorService executorService = Executors.newCachedThreadPool();
         Vector<Integer> vector = getRandom(fileList.size());
         for(Integer integer : vector){
             String filePath = fileList.get(integer.intValue());
             executorService.execute(sendFile(filePath));
+        }
+        if(!transFile_flag){
+            return   false;
+        }
+        else {
+            return true;
         }
     }
 
@@ -92,7 +102,7 @@ public class WifiP2pTransterClient {
                 transfile.setPath(filePath);
                 transfile.setName(file.getName());
                 transfile.setTotalSize("/" + FileSizeUtil.FormetFileSize(file.length()));
-                //transFiles.add(transfile);
+                transFiles.add(transfile);
                 if(createConnection()){
                     int bufferSize = 8192;
                     byte[] buf = new byte[bufferSize];
@@ -115,6 +125,7 @@ public class WifiP2pTransterClient {
                             dos.write(buf, 0, read);
                             transfile.setCurrentSize(FileSizeUtil.FormetFileSize(passedlen));
                             transfile.setCurrentProgress((int) (passedlen * 100L / length));
+                            handler.sendEmptyMessage(0x13);
                         }
                         long curTime = System.currentTimeMillis();
                         int usedTime = (int) ((curTime-startTime)/1000);
@@ -125,6 +136,8 @@ public class WifiP2pTransterClient {
                         fis.close();
                         dos.close();
                         socket.close();
+                        transFile_flag=true;
+                        handler.sendEmptyMessage(0x14);
                         Log.d("debug","文件 " + filePath + "传输完成!");
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -135,10 +148,10 @@ public class WifiP2pTransterClient {
             private boolean createConnection() {
                 try {
                     socket = new Socket(ip, port);
-                    System.out.println("连接服务器成功！");
+                    Log.d("debug","连接服务器成功！");
                     return true;
                 } catch (Exception e) {
-                    System.out.println("连接服务器失败！");
+                    Log.d("debug","连接服务器失败！");
                     return false;
                 }
             }
