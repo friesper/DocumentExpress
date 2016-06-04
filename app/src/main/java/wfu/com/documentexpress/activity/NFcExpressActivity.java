@@ -29,7 +29,7 @@ import wfu.com.documentexpress.utils.TextRecord;
 /**
  * Created by sion on 2016/5/21.
  */
-public class NFcSendActivity  extends Activity implements NfcAdapter.CreateNdefMessageCallback,NfcAdapter.OnNdefPushCompleteCallback {
+public class NFcExpressActivity  extends Activity implements NfcAdapter.CreateNdefMessageCallback,NfcAdapter.OnNdefPushCompleteCallback {
     private    NfcAdapter  nfcAdapter;
     private PendingIntent pendingIntent;
     @Override
@@ -62,7 +62,12 @@ public class NFcSendActivity  extends Activity implements NfcAdapter.CreateNdefM
     @Override
     public void onNdefPushComplete(NfcEvent event) {
         Log.d("message", "complete");
+        Intent intent=getIntent();
+        intent.setClass(getApplicationContext(),WiFiDirectReceiverActivity.class);
+
     }
+
+
 
     @Override
     protected void onResume() {
@@ -96,6 +101,7 @@ public class NFcSendActivity  extends Activity implements NfcAdapter.CreateNdefM
         Intent  intent1=new Intent(getApplicationContext(),WifiDriectExpressActivity.class);
         intent1.putExtra("MacDress",macDress);
         startActivity(intent1);
+        onDestroy();
      }
 
     public NdefRecord createTextRecord(String text) {

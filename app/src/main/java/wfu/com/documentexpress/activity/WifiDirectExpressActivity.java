@@ -28,7 +28,7 @@ import wfu.com.documentexpress.utils.WIFIDirectBroadCastReceiver;
 /**
  * Created by sion on 2016/5/25.
  */
-public class WifiDriectExpressActivity extends Activity {
+public class WifiDirectExpressActivity extends Activity {
     private  WifiP2pManager  wifiP2pManager;
     private  WifiP2pManager.Channel mChannel;
     private WifiP2pInfo info;
@@ -104,7 +104,7 @@ public class WifiDriectExpressActivity extends Activity {
         interrupt_trans = (Button) findViewById(R.id.interrupt_trans);
         title = (TextView) findViewById(R.id.trans_title);
         transFiles = new ArrayList<FileUpdate>();
-        adapter = new FileUpdateAdapter(WifiDriectExpressActivity.this,R.layout.file_progress_item,transFiles);
+        adapter = new FileUpdateAdapter(WifiDirectExpressActivity.this,R.layout.file_progress_item,transFiles);
         transList.setAdapter(adapter);
 
 
