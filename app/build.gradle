@@ -26,4 +26,5 @@ dependencies {
     compile files('src/libs/zxing.jar')
     compile files('src/libs/sun.misc.BASE64Decoder.jar')
     compile project(':library')
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }

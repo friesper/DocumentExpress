@@ -89,7 +89,7 @@ public class Dir_choose_listview_adapter extends BaseAdapter {
             }
         return convertView;
     }
-    class   ViewHolder{
+   private  class   ViewHolder{
         private TextView  file_dir;
         private ImageView  file_dir_icon;
 
