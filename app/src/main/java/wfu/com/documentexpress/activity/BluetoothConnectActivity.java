@@ -26,6 +26,7 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
@@ -38,7 +39,7 @@ import wfu.com.documentexpress.adapter.BlueTooth_list_adapter;
 /**
  * Created by Lenovo on 2016/5/19.
  */
-public class BluetoothConnectActivity extends Activity {
+public class BluetoothConnectActivity extends Activity implements Serializable{
     private BluetoothAdapter adapter;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -203,8 +204,10 @@ public class BluetoothConnectActivity extends Activity {
         socket.connect();
                 if(socket.isConnected()){    Log.d("debug","connect successful ");
                 device=sdevice;
+                    setContentView(R.layout.activity_sendfile);
                 Intent  intent=getIntent();
                     intent.putExtra("bluetooth",device.getAddress());
+
                     intent.setClass(getApplicationContext(),BluetoothSendActivity.class);
 
                 }
@@ -221,9 +224,5 @@ public class BluetoothConnectActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
     }
-    /**
-     * 发送文件
-     * @param macAddress 蓝牙地址
-     */
 
 }

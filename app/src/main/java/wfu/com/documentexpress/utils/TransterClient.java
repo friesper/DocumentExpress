@@ -96,7 +96,7 @@ public class TransterClient {
             private int port = Constant.DEFAULT_BIND_PORT;
 
             public void run() {
-                System.out.println("开始发送文件:" + filePath);
+              Log.d("debug","开始发送文件:" + filePath);
                 File file = new File(filePath);
                 FileUpdate transfile = new FileUpdate();
                 transfile.setPath(filePath);
