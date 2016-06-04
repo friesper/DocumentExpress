@@ -98,7 +98,7 @@ public class NFcExpressActivity  extends Activity implements NfcAdapter.CreateNd
     @Override
      public void onNewIntent(Intent intent){
         String  macDress= processIntent(intent);
-        Intent  intent1=new Intent(getApplicationContext(),WifiDriectExpressActivity.class);
+        Intent  intent1=new Intent(getApplicationContext(),WiFiDirectReceiverActivity.class);
         intent1.putExtra("MacDress",macDress);
         startActivity(intent1);
         onDestroy();

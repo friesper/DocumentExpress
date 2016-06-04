@@ -219,7 +219,7 @@ public class FileChooseActivity extends FragmentActivity {
                 } else {
 //                    LogUtil.e("1", choosePath.toString());
                    // Intent intent=new Intent(context,ConnectUserActivity.class);
-                    Intent intent=new Intent(context,WifiDriectExpressActivity.class);
+                    Intent intent=new Intent(context,WifiDirectExpressActivity.class);
                     intent.putExtra("path_list", (Serializable) choosePath);
                     startActivity(intent);
                     finish();
