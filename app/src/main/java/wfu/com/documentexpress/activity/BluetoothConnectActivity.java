@@ -34,6 +34,7 @@ import java.util.UUID;
 
 import wfu.com.documentexpress.R;
 import wfu.com.documentexpress.adapter.BlueTooth_list_adapter;
+import wfu.com.documentexpress.utils.BluetoothSendService;
 
 
 /**
@@ -88,7 +89,7 @@ public class BluetoothConnectActivity extends Activity implements Serializable{
         bluetoothList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-             final    BluetoothDevice  mdevice=(BluetoothDevice)madapter.getItem(i);
+             /*final    BluetoothDevice  mdevice=(BluetoothDevice)madapter.getItem(i);
                 int connectState = mdevice.getBondState();
                 switch (connectState) {
                     // 未配对
@@ -115,7 +116,13 @@ public class BluetoothConnectActivity extends Activity implements Serializable{
                             Log.d("debug","cancel discovery");
 
                         break;
-                }
+                }*/
+                final    BluetoothDevice  mdevice=(BluetoothDevice)madapter.getItem(i);
+                String  adress=mdevice.getAddress();
+                Intent intent=getIntent();
+                intent.putExtra("mac_dress",adress);
+                intent.setClass(getApplicationContext(),bluetoothsendActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -204,11 +211,11 @@ public class BluetoothConnectActivity extends Activity implements Serializable{
         socket.connect();
                 if(socket.isConnected()){    Log.d("debug","connect successful ");
                 device=sdevice;
-                    setContentView(R.layout.activity_sendfile);
                 Intent  intent=getIntent();
                     intent.putExtra("bluetooth",device.getAddress());
 
-                    intent.setClass(getApplicationContext(),BluetoothSendActivity.class);
+                    intent.setClass(getApplicationContext(),bluetoothsendActivity.class);
+                    startActivity(intent);
 
                 }
 

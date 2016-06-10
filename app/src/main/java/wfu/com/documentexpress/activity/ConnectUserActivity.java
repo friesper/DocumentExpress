@@ -1,6 +1,5 @@
 package wfu.com.documentexpress.activity;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,6 +23,7 @@ import wfu.com.documentexpress.R;
 import wfu.com.documentexpress.libzxing.zxing.encoding.EncodingUtils;
 import wfu.com.documentexpress.socketoperation.AcceptScanOk;
 import wfu.com.documentexpress.utils.Base64;
+import wfu.com.documentexpress.utils.DialogUtil;
 import wfu.com.documentexpress.utils.LogUtil;
 import wfu.com.documentexpress.wifioperation.WifiApAdmin;
 
@@ -105,20 +105,28 @@ public class ConnectUserActivity extends BaseActivity {
         showDialog();
     }
     private void showDialog() {
-        new AlertDialog.Builder(ConnectUserActivity.this).setTitle("注意！")//设置对话框标题
-                .setMessage("返回后将取消传送，是否确定？")//设置显示的内容
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {//添加确定按钮
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件
-                        closeAp(ConnectUserActivity.this);
-                        finish();
-                    }
-                }).setNegativeButton("返回", new DialogInterface.OnClickListener() {//添加返回按钮
+//        new AlertDialog.Builder(ConnectUserActivity.this).setTitle("注意！")//设置对话框标题
+//                .setMessage("返回后将取消传送，是否确定？")//设置显示的内容
+//                .setPositiveButton("确定", new DialogInterface.OnClickListener() {//添加确定按钮
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件
+//                        closeAp(ConnectUserActivity.this);
+//                        finish();
+//                    }
+//                }).setNegativeButton("返回", new DialogInterface.OnClickListener() {//添加返回按钮
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {//响应事件
+//                dialog.dismiss();
+//            }
+//        }).show();//在按键响应事件中显示此对话框
+        DialogUtil.showDialog(ConnectUserActivity.this,"返回后将取消传送，是否确定？", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {//响应事件
-                dialog.dismiss();
+            public void onClick(DialogInterface dialogInterface, int i) {
+                closeAp(ConnectUserActivity.this);
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                finish();
             }
-        }).show();//在按键响应事件中显示此对话框
+        });
     }
     private void qrCodeGeneration(String ssid, String password) {
         if(ssid!=null&&password!=null){

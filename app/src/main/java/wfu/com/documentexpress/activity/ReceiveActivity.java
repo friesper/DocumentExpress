@@ -36,7 +36,7 @@ import wfu.com.documentexpress.wifioperation.WifiAdmin;
 /**
  * Created by Lenovo on 2016/5/9.
  */
-public class ReceiveActivity extends BaseActivity {
+public class ReceiveActivity extends BaseActivity  {
     //接收文件的activity，包括接受文件的seversocket
     //给二维码显示界面反馈信息
     private int defaultBindPort = Constant.DEFAULT_BIND_PORT;    //默认监听端口号为10000
@@ -75,7 +75,8 @@ public class ReceiveActivity extends BaseActivity {
                     title.setText("接收完成");
                     adapter.notifyDataSetChanged();
                     interrupt_trans.setText("我也要发");
-                    interrupt_trans.setBackgroundColor(getResources().getColor(R.color.custom));
+//                    interrupt_trans.setBackgroundColor(getResources().getColor(R.color.custom));
+                    interrupt_trans.setBackgroundResource(R.drawable.button_state_change);
                     break;
             }
 
@@ -97,11 +98,7 @@ public class ReceiveActivity extends BaseActivity {
                 wifiAdmin.addNetwork(wifiAdmin.CreateWifiInfo(ssid, password, 3));
                 String recevicePath = Environment.getExternalStorageDirectory().getPath()+"/";
                 myhandler.sendEmptyMessage(0x127);
-                while(!isWifiConnected(ReceiveActivity.this)){
-
-
-
-                }
+                while(!isWifiConnected(ReceiveActivity.this)){}
                 myhandler.sendEmptyMessage(0x128);
                 targetIp = intToIp(wifiAdmin.getDhcpInfo().serverAddress);
                 LogUtil.e("1", targetIp);
@@ -127,6 +124,7 @@ public class ReceiveActivity extends BaseActivity {
         transList.setAdapter(adapter);
     }
 
+
     // 是否连接WIFI
     public static boolean isWifiConnected(Context context)
     {
@@ -140,17 +138,16 @@ public class ReceiveActivity extends BaseActivity {
         return false ;
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
-
     //IP转换
     private String intToIp(int paramInt) {
         return (paramInt & 0xFF) + "." + (0xFF & paramInt >> 8) + "." + (0xFF & paramInt >> 16) + "."
                 + (0xFF & paramInt >> 24);
     }
+
     private void startSendSever(String recevicePath) {
         try {
             this.bingToServerPort(defaultBindPort);
@@ -198,7 +195,7 @@ public class ReceiveActivity extends BaseActivity {
     class Handler implements Runnable{
         private Socket socket;
         private String RECEIVE_FILE_PATH;
-        FileUpdate recfile = new FileUpdate();
+
         public Handler(Socket socket,String re){
             this.socket = socket;
             RECEIVE_FILE_PATH = re;
@@ -210,7 +207,7 @@ public class ReceiveActivity extends BaseActivity {
 
             DataInputStream dis = null;
             DataOutputStream dos = null;
-
+            FileUpdate recfile = new FileUpdate();
             int bufferSize = 8192;
             byte[] buf = new byte[bufferSize];
 

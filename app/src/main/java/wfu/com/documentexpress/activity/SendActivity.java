@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -27,7 +26,6 @@ import wfu.com.documentexpress.R;
 import wfu.com.documentexpress.adapter.FileUpdateAdapter;
 import wfu.com.documentexpress.model.FileUpdate;
 import wfu.com.documentexpress.socketoperation.Constant;
-import wfu.com.documentexpress.utils.ActivityCollector;
 import wfu.com.documentexpress.utils.FileSizeUtil;
 import wfu.com.documentexpress.utils.LogUtil;
 
@@ -58,7 +56,8 @@ public class SendActivity extends BaseActivity {
                     title.setText("发送完成");
                     adapter.notifyDataSetChanged();
                     interrupt_trans.setText("继续发送");
-                   interrupt_trans.setBackgroundColor(getResources().getColor(R.color.custom));
+//                    interrupt_trans.setBackgroundColor(getResources().getColor(R.color.custom));
+                    interrupt_trans.setBackgroundResource(R.drawable.button_state_change);
                     break;
             }
         }
@@ -69,24 +68,17 @@ public class SendActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sendfile);
         initView();
-        Log.d("debug","initView");
         initEvent();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 if(targetIp!=null){
                     LogUtil.e("0", targetIp);
-                    Log.d("debug","Tjhread+++");
                     service(targetIp);
                 }
             }
         }).start();
 
-    }
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-    
     }
 
     private void initView() {
@@ -110,27 +102,10 @@ public class SendActivity extends BaseActivity {
 
     }
 
-    public void service(String ip){
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        Vector<Integer> vector = getRandom(fileList.size());
-        for(Integer integer : vector){
-            String filePath = fileList.get(integer.intValue());
-            executorService.execute(sendFile(filePath,ip));
-        }
-    }
-
-    private Vector<Integer> getRandom(int size){
-        Vector<Integer> v = new Vector<Integer>();
-        Random r = new Random();
-        boolean b = true;
-        while(b){
-            int i = r.nextInt(size);
-            if(!v.contains(i))
-                v.add(i);
-            if(v.size() == size)
-                b = false;
-        }
-        return v;
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+        finish();
     }
 
 
@@ -142,7 +117,6 @@ public class SendActivity extends BaseActivity {
             private int port = Constant.DEFAULT_BIND_PORT;
             FileUpdate transfile = new FileUpdate();
             public void run() {
-                Log.d("debug","开始发送文件");
                 System.out.println("开始发送文件:" + filePath);
                 File file = new File(filePath);
                 transfile.setPath(filePath);
@@ -151,7 +125,6 @@ public class SendActivity extends BaseActivity {
                 transFiles.add(transfile);
 
                 if(createConnection()){
-                    Log.d("debug","transfile");
                     int bufferSize = 8192;
                     byte[] buf = new byte[bufferSize];
                     try {
@@ -195,12 +168,10 @@ public class SendActivity extends BaseActivity {
             private boolean createConnection() {
                 try {
                     socket = new Socket(ip, port);
-                    Log.d("debug","连接服务器成功");
                     System.out.println("连接服务器成功！");
                     return true;
                 } catch (Exception e) {
                     System.out.println("连接服务器失败！");
-                    Log.d("debug","连接服务器失败");
                     return false;
                 }
             }
@@ -208,11 +179,27 @@ public class SendActivity extends BaseActivity {
         };
     }
 
-
-    @Override
-    public void onBackPressed() {
-        startActivity(new Intent(getApplicationContext(),MainActivity.class));
-        finish();
+    public void service(String ip){
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        Vector<Integer> vector = getRandom(fileList.size());
+        for(Integer integer : vector){
+            String filePath = fileList.get(integer.intValue());
+            executorService.execute(sendFile(filePath,ip));
+        }
     }
 
+
+    private Vector<Integer> getRandom(int size){
+        Vector<Integer> v = new Vector<Integer>();
+        Random r = new Random();
+        boolean b = true;
+        while(b){
+            int i = r.nextInt(size);
+            if(!v.contains(i))
+                v.add(i);
+            if(v.size() == size)
+                b = false;
+        }
+        return v;
+    }
 }

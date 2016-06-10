@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,9 +25,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -35,13 +34,12 @@ import java.util.concurrent.Executors;
 import wfu.com.documentexpress.R;
 import wfu.com.documentexpress.adapter.FileUpdateAdapter;
 import wfu.com.documentexpress.model.FileUpdate;
-import wfu.com.documentexpress.socketoperation.Constant;
 import wfu.com.documentexpress.utils.FileSizeUtil;
 
 /**
  * Created by yinxucun on 16-6-4.
  */
-public class BluetoothSendActivity extends Activity {
+public class BluetoothSendActivity1 extends Activity {
     private LinearLayout cancleTrans;
     private ListView transList;
     private Button interrupt_trans;
@@ -55,14 +53,10 @@ public class BluetoothSendActivity extends Activity {
     private static ArrayList<String> fileList = new ArrayList<String>();
     BluetoothAdapter  madapter;
     BluetoothSocket  btSocket;
-    String  bluetooth;
+    String  bluetooth_mac;
     BluetoothDevice bluetoothDevice;
 
-
-
-
-
-    Context  context=getApplicationContext();
+    Context  context;
 
     private Handler handler = new Handler(){
         @Override
@@ -84,16 +78,23 @@ public class BluetoothSendActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sendfile);
-        List<String>  alit=getIntent().getStringArrayListExtra("path_list");
+        initView();
+        Intent intent  =getIntent();
+        Log.d("debug","intent");
+        List<String>  alit=(List<String>)intent.getSerializableExtra("path_list");
+
+        if(alit==null|alit.size()==0){
+        Log.d("debug","null");
+        }
         madapter=BluetoothAdapter.getDefaultAdapter();
-          bluetooth=getIntent().getStringExtra("bluetooth");
+        bluetooth_mac=getIntent().getStringExtra("bluetooth");
+        context=getApplicationContext();
         ExecutorService executorService = Executors.newCachedThreadPool();
-        while (btSocket!=null&&btSocket.isConnected()) {
+
             for (String name : alit) {
                 getFilePath(name);
-                executorService.execute(sendFile(name,bluetooth));
+                sendFiles(bluetooth_mac,name);
                  }
-             }
     }
     public void sendFiles(String macAddress, String path) {
          bluetoothDevice = this.madapter.getRemoteDevice(macAddress);
@@ -131,7 +132,7 @@ public class BluetoothSendActivity extends Activity {
         }
     }
     private void getFilePath(String dirPath){
-        fileList.add(dirPath);
+                                               fileList.add(dirPath);
     }
     private  Runnable sendFile(final String filePath,final String macAddress){
         return new Runnable(){
@@ -205,6 +206,15 @@ public class BluetoothSendActivity extends Activity {
             }
 
         };
+    }
+    private void initView() {
+        cancleTrans = (LinearLayout) findViewById(R.id.cancle_file_filesendlayout);
+        transList = (ListView) findViewById(R.id.transing_filelist);
+        interrupt_trans = (Button) findViewById(R.id.interrupt_trans);
+        title = (TextView) findViewById(R.id.trans_title);
+        transFiles = new ArrayList<FileUpdate>();
+        adapter = new FileUpdateAdapter(BluetoothSendActivity1.this,R.layout.file_progress_item,transFiles);
+        transList.setAdapter(adapter);
     }
 
 

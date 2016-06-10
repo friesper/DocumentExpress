@@ -38,6 +38,7 @@
         <activity android:name=".activity.MainActivityt">
 
         </activity>
+        <activity android:name=".activity.bluetoothsendActivity"/>
         <activity android:name=".activity.DirChosseActivity"/>
         <activity android:name=".activity.ConnectUserActivity"/>
         <activity android:name=".activity.BaseActivity"/>
@@ -49,7 +50,9 @@
         </activity>
         <activity android:name=".activity.ReceiveActivity"/>
         <activity android:name=".activity.BluetoothReceiverActivity"/>
-        <activity android:name=".activity.BluetoothSendActivity"/>
+        <activity android:name=".activity.BluetoothSendActivity1"/>
+        <activity android:name=".activity.PhoneTransActivity"/>
+        <activity android:name=".activity.BluetoothConnectActivity"/>
         <activity android:name=".activity.NFcExpressActivity"/>
         <activity android:name=".activity.WiFiDirectReceiverActivity"
             android:launchMode="singleTask"/>

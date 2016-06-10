@@ -1,7 +1,6 @@
 package wfu.com.documentexpress.activity;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -42,6 +41,7 @@ import wfu.com.documentexpress.adapter.FileListViewAdapter;
 import wfu.com.documentexpress.adapter.ImageViewAdapter;
 import wfu.com.documentexpress.model.SDFile;
 import wfu.com.documentexpress.utils.DateTransformUtil;
+import wfu.com.documentexpress.utils.DialogUtil;
 import wfu.com.documentexpress.utils.FileOperation;
 import wfu.com.documentexpress.view.AnimTabsView;
 
@@ -125,19 +125,26 @@ public class FileChooseActivity extends FragmentActivity {
     }
 
     private void showDialog() {
-        new AlertDialog.Builder(FileChooseActivity.this).setTitle("注意！")//设置对话框标题
-                .setMessage("您确定要取消本次传输吗？")//设置显示的内容
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {//添加确定按钮
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件
-                        finish();
-                    }
-                }).setNegativeButton("返回", new DialogInterface.OnClickListener() {//添加返回按钮
+//        new AlertDialog.Builder(FileChooseActivity.this).setTitle("注意！")//设置对话框标题
+//                .setMessage("您确定要取消本次传输吗？")//设置显示的内容
+//                .setPositiveButton("确定", new DialogInterface.OnClickListener() {//添加确定按钮
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件
+//                        finish();
+//                    }
+//                }).setNegativeButton("返回", new DialogInterface.OnClickListener() {//添加返回按钮
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {//响应事件
+//                dialog.dismiss();
+//            }
+//        }).show();//在按键响应事件中显示此对话框
+        DialogUtil.showDialog(FileChooseActivity.this, "您确定要取消本次传输吗？", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {//响应事件
-                dialog.dismiss();
+            public void onClick(DialogInterface dialogInterface, int i) {
+                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                finish();
             }
-        }).show();//在按键响应事件中显示此对话框
+        });
     }
 
     @Override
@@ -218,12 +225,10 @@ public class FileChooseActivity extends FragmentActivity {
                     Toast.makeText(context, "未选中任何文件", Toast.LENGTH_SHORT).show();
                 } else {
 //                    LogUtil.e("1", choosePath.toString());
-                   // Intent intent=new Intent(context,ConnectUserActivity.class);
-                    Intent intent=new Intent(context,WifiDirectExpressActivity.class);
+                    Intent intent=new Intent(context,ConnectUserActivity.class);
                     intent.putExtra("path_list", (Serializable) choosePath);
                     startActivity(intent);
                     finish();
-
                 }
             }
         });

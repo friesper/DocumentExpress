@@ -27,12 +27,17 @@ import android.widget.Toast;
 
 
 import wfu.com.documentexpress.R;
+import wfu.com.documentexpress.libzxing.zxing.activity.CaptureActivity;
+import wfu.com.documentexpress.utils.Base64;
 import wfu.com.documentexpress.utils.SharepreferencesUtilSystemSettings;
 import wfu.com.documentexpress.utils.WIFIDirectBroadCastReceiver;
+import wfu.com.documentexpress.wifioperation.WifiAdmin;
+import wfu.com.documentexpress.wifioperation.WifiApAdmin;
 
 public class MainActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
-
+    private WifiAdmin wifiAdmin;
     private  Button  send_file=null;
+    private static final String special_prefix = "docexp";
     private  Button   recieve_file=null;
     private  SwitchCompat setting_sound=null;
     private  SwitchCompat setting_vibration=null;
@@ -52,10 +57,12 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         * 通过获取不同的分辨率适配不同的布局文件
         * */
         initView();
+        closeAp(MainActivity.this);
+        wifiAdmin.openWifi();
         send_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {//开始发送文件的Activity
-                Intent  intent=new Intent(getApplicationContext(),BluetoothSendActivity.class);
+                Intent  intent=new Intent(getApplicationContext(),FileChooseActivity.class);
                 startActivity(intent);
 
             }
@@ -63,8 +70,8 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         recieve_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {  //开始接收文件的Activity
-                Intent  intent=new Intent(getApplicationContext(),BluetoothReceiverActivity.class);
-                startActivity(intent);
+                Intent openCameraIntent = new Intent(MainActivity.this, CaptureActivity.class);
+                startActivityForResult(openCameraIntent, 0);
 
             }
         });
@@ -79,11 +86,43 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 show_dir.setText(  data.getStringExtra("dir_path"));
                 Log.d("Tag",dirPath);
                 break;
+            case 0:
+                Bundle bundle = data.getExtras();
+                String scanResult = Base64.getFromBase64(bundle.getString("result"));
+                if(scanResult.length()>=special_prefix.length()){
+                    if(special_prefix.equals(scanResult.substring(0,special_prefix.length()))){
+                        String s[] = scanResult.split("[|]");
+                        String ssid = s[0];
+                        String password = s[1];
+//            Log.e("1", ssid + " " + password);
+//                    wifiAdmin.disconnectWifi(wifiAdmin.getNetworkId());
+//                    wifiAdmin.addNetwork(wifiAdmin.CreateWifiInfo(ssid, password, 3));
+                        Intent intent = new Intent(MainActivity.this, ReceiveActivity.class);
+                        intent.putExtra("ssid",ssid);
+                        intent.putExtra("password",password);
+                        startActivity(intent);
+                        finish();
+
+                    }else{
+                        Toast.makeText(MainActivity.this, "请扫描正确二维码", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this,"请扫描正确二维码",Toast.LENGTH_SHORT).show();
+                }
             default:
                 break;
         }
     }
-
+    @Override
+    protected void onResume() {
+        closeAp(MainActivity.this);
+        super.onResume();
+    }
+    @Override
+    protected void onDestroy() {
+        closeAp(MainActivity.this);
+        super.onDestroy();
+    }
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
@@ -135,6 +174,7 @@ void  initView(){/*
         * 绘制Materl  Design  的TOOLBar
         * */
     dirPath=SharepreferencesUtilSystemSettings.SETTING;
+    wifiAdmin = new WifiAdmin(MainActivity.this);
 
     Toolbar  toolbar= (Toolbar) findViewById(R.id.toolbar);
     toolbar.setSubtitle(R.string.app_name);
@@ -251,5 +291,9 @@ void  initView(){/*
         }
     });
 }
+    private void closeAp(Context context){
+        WifiApAdmin.closeWifiAp(context);
+    }
+
 
 }
