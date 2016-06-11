@@ -62,17 +62,32 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         send_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {//开始发送文件的Activity
-                Intent  intent=new Intent(getApplicationContext(),FileChooseActivity.class);
-                startActivity(intent);
-
+                switch (express_mode) {
+                    case "WiFi" :  Intent intent = new Intent(getApplicationContext(), FileChooseActivity.class);
+                    startActivity(intent);
+                        break;
+                    case  "蓝牙":
+                        Intent  intent1=new Intent(MainActivity.this,BlueToothActivity.class);
+                        startActivity(intent1);
+                        break;
+                    default:break;
+                }
             }
         });
         recieve_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {  //开始接收文件的Activity
-                Intent openCameraIntent = new Intent(MainActivity.this, CaptureActivity.class);
-                startActivityForResult(openCameraIntent, 0);
+                switch (express_mode) {
+                    case "WiFi":   Intent openCameraIntent = new Intent(MainActivity.this, CaptureActivity.class);
+                    startActivityForResult(openCameraIntent, 0);
 
+                break;
+                    case "蓝牙":Intent  intent_bluetooth=new Intent(MainActivity.this,BlueToothActivity.class);
+                        startActivity(intent_bluetooth);
+                        break;
+                    default:break;
+
+                }
             }
         });
 
