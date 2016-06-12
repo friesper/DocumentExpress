@@ -36,6 +36,7 @@ import wfu.com.documentexpress.utils.FileSizeUtil;
  */
 public class bluetoothClientActivity_express extends Activity {
     FileUpdate transfile ;
+    public   boolean   trance_complete=true;
     public static final int RESULT_CODE = 1000;    //选择文件   请求码
     public static final String SEND_FILE_NAME = "sendFileName";
     private TextView serversText;
@@ -124,11 +125,11 @@ public class bluetoothClientActivity_express extends Activity {
 				/*发送文件  由于Intent无法传递很多数据，所以先将文件路径广播给BluetoothClientService，
 				 * *由该Service读取文件后通过对象流发送给远程蓝牙设备
 				 */
-               if (file_list.size()==0) {
+               if (fileList.size()==0) {
                    Toast.makeText(bluetoothClientActivity_express.this, "未选择文件", Toast.LENGTH_SHORT).show();
-               } else if(file_list!=null) {
+               } else if(fileList!=null&&fileList.size()>=0) {
                    List<TransmitBean> list=new ArrayList<TransmitBean>();
-                    Log.d("debug",file_list.toString());
+                    Log.d("debug",fileList.toString());
                    Vector<Integer> vector = getRandom(fileList.size());
                   for(Integer integer : vector){
                        TransmitBean transmit = new TransmitBean();
@@ -140,6 +141,9 @@ public class bluetoothClientActivity_express extends Activity {
                        list.add(transmit);
                    }Intent sendDataIntent = new Intent(BluetoothTools.ACTION_DATA_TO_SERVICE);
                    for (TransmitBean transmitBean:list) {
+                       while (trance_complete){
+
+                       }
                        sendDataIntent.putExtra(BluetoothTools.DATA,  transmitBean);
                        sendBroadcast(sendDataIntent);
                    }
@@ -160,30 +164,52 @@ public class bluetoothClientActivity_express extends Activity {
 
             }
             if (BluetoothTools.ACTION_FILE_SEND_PERCENT.equals(action)) {//发送文件百分比
+                trance_complete=false;
 
                 TransmitBean data = (TransmitBean)intent.getExtras().getSerializable(BluetoothTools.DATA);
-
-
+                spDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                spDialog.setTitle("提示");
+                spDialog.setIcon(R.drawable.icon);
                 if(!"0".equals(data.getTspeed())){
-                    transfile.setCurrentSpeed(data.getTspeed()+"k/s");
-                    adapter.notifyDataSetChanged();
+                    spDialog.setMessage("文件发送速度:"+data.getTspeed()+"k/s");
                 }
-                transfile.setCurrentProgress(Integer.valueOf(data.getUppercent()));
+                spDialog.setMax(100);
+                spDialog.setProgress(Integer.valueOf(data.getUppercent()));
+                spDialog.setIndeterminate(false);
+                spDialog.setCancelable(true);
+//				spDialog.setButton("取消", new DialogInterface.OnClickListener(){
+//				    @Override
+//				    public void onClick(DialogInterface dialog, int which) {
+//				        dialog.cancel();
+//				    }
+//				});
+                spDialog.show();
+                if(Integer.valueOf(data.getUppercent())==100){
+                    trance_complete=true;
+                    spDialog.dismiss();
+                    spDialog.setProgress(0);
+                }
 
 
             }
             if (BluetoothTools.ACTION_FILE_RECIVE_PERCENT.equals(action)) {//接收文件百分比
-                FileUpdate transfile = new FileUpdate();
                 TransmitBean data = (TransmitBean)intent.getExtras().getSerializable(BluetoothTools.DATA);
-                transfile.setPath(data.getFilepath());
-                transfile.setName(data.getFilename());
-                transFiles.add(transfile);
-
+                rpDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                rpDialog.setTitle("提示");
+                rpDialog.setIcon(R.drawable.icon);
                 if(!"0".equals(data.getTspeed())){
-                    transfile.setCurrentSpeed(data.getTspeed()+"k/s");
-
+                    rpDialog.setMessage("文件接收速度:"+data.getTspeed()+"k/s");
                 }
+                rpDialog.setMax(100);
+                rpDialog.setProgress(Integer.valueOf(data.getUppercent()));
+                rpDialog.setIndeterminate(false);
+                rpDialog.setCancelable(true);
 
+                rpDialog.show();
+                if(Integer.valueOf(data.getUppercent())==100){
+                    rpDialog.dismiss();
+                    rpDialog.setProgress(0);
+                }
 
 
             }
