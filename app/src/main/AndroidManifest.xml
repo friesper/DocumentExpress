@@ -51,6 +51,7 @@
         <activity android:name=".activity.SendActivity">
 
         </activity>
+
         <service android:name=".Server.BluetoothServerService"></service>
         <service android:name=".Server.BluetoothClientService"></service>
         <activity android:name=".activity.ReceiveActivity"/>

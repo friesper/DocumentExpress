@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<TextView
+		android:id="@+id/serverStateText"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="5dip"
+		android:layout_marginBottom="5dip"
+	></TextView>
+	
+	<EditText
+		android:id="@+id/serverEditText"
+		android:layout_width="fill_parent"
+		android:layout_height="200dip"
+		android:singleLine="false"
+		android:gravity="top"
+		android:editable="false"
+		android:cursorVisible="false"
+		android:background="#aaa"
+		android:layout_margin="5dip"
+	></EditText>
+	
+	<LinearLayout  
+        android:layout_width="match_parent" 
+		android:layout_below="@id/serverEditText"
+        android:layout_height="190dp"  
+        android:layout_marginTop="5dp"  
+        android:orientation="vertical" >  
+  
+        <TextView  
+            android:layout_width="match_parent"  
+            android:layout_height="wrap_content"  
+            android:text="已配对设备" />  
+          <ListView  
+            android:id="@+id/bondDevices"  
+            android:layout_width="wrap_content"  
+           android:layout_height="wrap_content"  
+           android:layout_alignParentLeft="true"  >  
+         </ListView>  
+    </LinearLayout>  
+</LinearLayout>

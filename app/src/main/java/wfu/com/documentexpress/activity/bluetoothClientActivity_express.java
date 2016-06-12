@@ -47,11 +47,13 @@ public class bluetoothClientActivity_express extends Activity {
     private ListView transList;
     private List<FileUpdate> transFiles;
     public    FileUpdateAdapter adapter;
+    List<TransmitBean> list;
     File file;
     Button mSelectFileBtn;
     TextView mSendFileNameTV;
     private ProgressDialog spDialog;
     private ProgressDialog rpDialog;
+    int  num;
     @Override
     protected void onStart() {
 
@@ -125,29 +127,25 @@ public class bluetoothClientActivity_express extends Activity {
 				/*发送文件  由于Intent无法传递很多数据，所以先将文件路径广播给BluetoothClientService，
 				 * *由该Service读取文件后通过对象流发送给远程蓝牙设备
 				 */
+               num=0;
                if (fileList.size()==0) {
                    Toast.makeText(bluetoothClientActivity_express.this, "未选择文件", Toast.LENGTH_SHORT).show();
                } else if(fileList!=null&&fileList.size()>=0) {
-                   List<TransmitBean> list=new ArrayList<TransmitBean>();
-                    Log.d("debug",fileList.toString());
+                    list = new ArrayList<TransmitBean>();
+                   Log.d("debug", fileList.toString());
                    Vector<Integer> vector = getRandom(fileList.size());
-                  for(Integer integer : vector){
+                   for (Integer integer : vector) {
                        TransmitBean transmit = new TransmitBean();
                        String path = fileList.get(integer.intValue());
-                       Log.d("debug",path);
+                       Log.d("debug", path);
                        String filename = path.substring(path.lastIndexOf("/") + 1, path.length());
                        transmit.setFilename(filename);
                        transmit.setFilepath(path);
                        list.add(transmit);
-                   }Intent sendDataIntent = new Intent(BluetoothTools.ACTION_DATA_TO_SERVICE);
-                   for (TransmitBean transmitBean:list) {
-                       while (trance_complete){
-
-                       }
-                       sendDataIntent.putExtra(BluetoothTools.DATA,  transmitBean);
-                       sendBroadcast(sendDataIntent);
                    }
-                }
+                   express();
+
+               }
            }
        });
    }
@@ -164,7 +162,6 @@ public class bluetoothClientActivity_express extends Activity {
 
             }
             if (BluetoothTools.ACTION_FILE_SEND_PERCENT.equals(action)) {//发送文件百分比
-                trance_complete=false;
 
                 TransmitBean data = (TransmitBean)intent.getExtras().getSerializable(BluetoothTools.DATA);
                 spDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -185,9 +182,12 @@ public class bluetoothClientActivity_express extends Activity {
 //				});
                 spDialog.show();
                 if(Integer.valueOf(data.getUppercent())==100){
-                    trance_complete=true;
                     spDialog.dismiss();
                     spDialog.setProgress(0);
+                    if(num++<list.size());
+                    {
+                        express();
+                    }
                 }
 
 
@@ -234,4 +234,13 @@ public class bluetoothClientActivity_express extends Activity {
         unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
+  void    express(){
+      Intent sendDataIntent = new Intent(BluetoothTools.ACTION_DATA_TO_SERVICE);
+
+      if (num < list.size()) {
+          TransmitBean transmitBean = list.get(num);
+          sendDataIntent.putExtra(BluetoothTools.DATA, transmitBean);
+          sendBroadcast(sendDataIntent);
+      }
+  }
 }

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+	<TextView
+		android:id="@+id/clientServersText"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="5dip"
+		android:layout_marginBottom="5dip"
+	></TextView>
+
+	<EditText
+		android:id="@+id/clientChatEditText"
+		android:layout_width="fill_parent"
+		android:layout_height="200dip"
+		android:singleLine="false"
+		android:gravity="top"
+		android:editable="false"
+		android:cursorVisible="false"
+		android:background="#aaa"
+		android:layout_margin="5dip"
+	></EditText>
+	
+	<EditText
+		android:id="@+id/clientSendEditText"
+		android:layout_width="fill_parent"
+
+		android:layout_height="80dip"
+		android:scrollbars="vertical"
+	></EditText>
+	
+	<LinearLayout
+        android:id="@+id/title2Layout" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/clientSendEditText"
+        android:layout_marginTop="5dp"
+        android:padding="2dp"
+        android:background="#aaa"
+        android:orientation="horizontal">
+        <TextView 
+            android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:paddingLeft="5dp"
+        	android:text="@string/send_file1"
+        	android:textColor="#fff"/>
+        <TextView 
+            android:id="@+id/sendFileTV"
+            android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:paddingLeft="5dp"
+        	android:text=""/>
+    </LinearLayout>
+
+	<LinearLayout
+        android:id="@+id/buttonLayout" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="2dp"
+        android:orientation="horizontal">
+        <Button 
+            android:id="@+id/clientSendMsgBtn"
+            android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:text="发送信息"/>
+       
+        <Button 
+            android:id="@+id/cancelSearchBtn"
+            android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:text="@string/select_file"/>
+         <Button 
+            android:id="@+id/fileSendBtn"
+            android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:text="发送文件"/>
+    </LinearLayout>
+</LinearLayout>
