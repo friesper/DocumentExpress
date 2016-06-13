@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:background="#ff0000"
+        android:background="@drawable/canclebutton_state_change"
         android:textColor="#fff"
         android:text="@string/cancle_rec"
         android:textSize="20sp"

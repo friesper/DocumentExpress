@@ -36,12 +36,8 @@
             </intent-filter>
 
         </activity>
-        <activity android:name=".activity.MainActivityt">
-
-        </activity>
         <activity android:name=".activity.DirChosseActivity"/>
         <activity android:name=".activity.BlueToothActivity"/>
-        <activity android:name=".activity.bluetoothClientActivity_express"/>
         <activity android:name=".activity.blueToothSelectActivity"/>
         <activity android:name=".activity.ConnectUserActivity"/>
         <activity android:name=".activity.BaseActivity"/>

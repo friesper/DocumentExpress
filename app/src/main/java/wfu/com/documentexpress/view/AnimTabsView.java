@@ -83,7 +83,7 @@ public class AnimTabsView extends RelativeLayout {
 		if (this.mScroller == null) {
 			this.mScroller = new Scroller(this.mContext, new DecelerateInterpolator());
 		}
-		((RelativeLayout) getItemView(this.mCurrentItemPosition)).setSelected(false);
+		((LinearLayout) getItemView(this.mCurrentItemPosition)).setSelected(false);
 		this.mCurrentItemPosition = selectePosition;
 		getItemView(this.mCurrentItemPosition).setSelected(true);
 		int oldX = this.mCurrentSlideX;
@@ -103,7 +103,7 @@ public class AnimTabsView extends RelativeLayout {
 	}
 
 	public void addItem(String itemText) {
-		RelativeLayout itemLayout = (RelativeLayout) View.inflate(this.mContext, R.layout.anim_tab_item, null);
+		LinearLayout itemLayout = (LinearLayout) View.inflate(this.mContext, R.layout.anim_tab_item, null);
 		((TextView) itemLayout.getChildAt(0)).setText(itemText);
 		itemLayout.setTag(Integer.valueOf(this.mTotalItemsCount));
 		if (this.mTotalItemsCount == 0) {

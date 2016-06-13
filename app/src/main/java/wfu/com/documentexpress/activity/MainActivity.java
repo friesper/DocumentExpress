@@ -54,6 +54,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     public  boolean   NFC_ENABLE;
     private Spinner  spinner=null;
     public NfcManager manager=null;
+    int express_mode_num=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +95,27 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                     default:break;
 
                 }
+            }
+        });
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i==0){
+
+
+                    return;
+                }
+                    String[] languagess = getResources().getStringArray(R.array.languages);
+                    express_mode = languagess[i];
+                    express_mode_num=i;
+                    Log.d("debug", express_mode);
+                    SharepreferencesUtilSystemSettings.putValue(getApplicationContext(), "express_mode", express_mode);
+                    SharepreferencesUtilSystemSettings.putValue(getApplicationContext(), "express_mode_num", express_mode_num);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
 
@@ -227,32 +249,8 @@ void  initView(){/*
     exit=(Button)findViewById(R.id.button_exit);
     show_dir=(TextView)findViewById(R.id.show_dir);//显示文件默认存储路径的TextView
     spinner=(Spinner)findViewById(R.id.select_mode);
-    SharedPreferences sharedPreferences = this.getSharedPreferences("share", MODE_PRIVATE);
-    boolean isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
-    SharedPreferences.Editor editor = sharedPreferences.edit();
-    if (isFirstRun)
-    {
-        Log.d("debug", "第一次运行");
-        editor.putBoolean("isFirstRun", false);
-        editor.commit();
-        SharepreferencesUtilSystemSettings.putValue(this,"Sound",true);
-        SharepreferencesUtilSystemSettings.putValue(this,"vibration",true);
-    } else
-    {
-        Log.d("debug", "不是第一次运行");
-        Sound=SharepreferencesUtilSystemSettings.getValue(getApplicationContext(), "Sound", true);
-        Vibration=SharepreferencesUtilSystemSettings.getValue(getApplicationContext(), "Vibration", true);
-        express_mode=SharepreferencesUtilSystemSettings.getValue(getApplicationContext(),"express_mode","");
-        Log.d("debug",express_mode);
-        if(Sound==true){
-            setting_sound.setChecked(true);
-        }else  setting_sound.setChecked(false);
-        if(Vibration==true)
-            setting_vibration.setChecked(true);
-        else setting_vibration.setChecked(false);
-        Log.d("debug", "setting_sound"+"...");
-        Log.d("debug", "setting_sound"+"0000");
-    }
+
+
     // 建立数据源
     String[] mItems = getResources().getStringArray(R.array.languages);
 // 建立Adapter并且绑定数据源
@@ -260,21 +258,11 @@ void  initView(){/*
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 //绑定 Adapter到控件
     spinner .setAdapter(adapter);
+    spinner.setSelection(0,true);
+    initsetting();
 
-    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-            String [] languagess=getResources().getStringArray(R.array.languages);
-            express_mode=languagess[i];
-            Log.d("debug",express_mode);
-            SharepreferencesUtilSystemSettings.putValue(getApplicationContext(),"express_mode",express_mode);
-        }
+    spinner.setSelection(express_mode_num);
 
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-
-        }
-    });
     manager=(NfcManager)getSystemService(Context.NFC_SERVICE);
     NfcAdapter  nfcAdapter=manager.getDefaultAdapter();
     if(adapter==null){
@@ -296,6 +284,7 @@ void  initView(){/*
         }
     });
 
+
     // setting_dir=(Button)findViewById(R.id.button_select_file_dir);
 
     // initSwitchButton();
@@ -314,6 +303,35 @@ void  initView(){/*
         }
     });
 }
+   void  initsetting(){
+       SharedPreferences sharedPreferences = this.getSharedPreferences("share", MODE_PRIVATE);
+       boolean isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
+       SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (isFirstRun)
+        {
+            Log.d("debug", "第一次运行");
+            editor.putBoolean("isFirstRun", false);
+            editor.commit();
+            SharepreferencesUtilSystemSettings.putValue(this,"Sound",true);
+            SharepreferencesUtilSystemSettings.putValue(this,"vibration",true);
+        } else
+        {
+            Log.d("debug", "不是第一次运行");
+            Sound=SharepreferencesUtilSystemSettings.getValue(getApplicationContext(), "Sound", true);
+            Vibration=SharepreferencesUtilSystemSettings.getValue(getApplicationContext(), "Vibration", true);
+            express_mode=SharepreferencesUtilSystemSettings.getValue(getApplicationContext(),"express_mode","");
+            express_mode_num=SharepreferencesUtilSystemSettings.getValue(getApplicationContext(),"express_mode_num",0);
+            Log.d("debug",express_mode);
+            if(Sound==true){
+                setting_sound.setChecked(true);
+            }else  setting_sound.setChecked(false);
+            if(Vibration==true)
+                setting_vibration.setChecked(true);
+            else setting_vibration.setChecked(false);
+            Log.d("debug", "setting_sound"+"...");
+            Log.d("debug", "setting_sound"+"0000");
+        }
+    }
     private void closeAp(Context context){
         WifiApAdmin.closeWifiAp(context);
     }

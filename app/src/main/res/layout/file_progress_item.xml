@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
+    android:descendantFocusability="blocksDescendants"
     android:background="#fff"
     android:layout_height="95dp">
     <LinearLayout
-        android:layout_width="30dp"
-        android:visibility="gone"
+        android:id="@+id/show_cb"
+        android:layout_width="40dp"
+        android:visibility="visible"
         android:layout_height="match_parent">
        <CheckBox
+           android:id="@+id/mut_cb_delete"
            android:layout_width="match_parent"
            android:layout_height="match_parent"
            android:button="@drawable/check_selector"
@@ -22,8 +25,8 @@
             android:layout_margin="15dp"
             android:layout_gravity="center_vertical"
             android:scaleType="centerInside"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:background="@mipmap/ic_launcher"
             />
     </LinearLayout>
@@ -75,18 +78,24 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
+        android:gravity="center_vertical"
         android:layout_height="match_parent">
-        <ImageButton
+        <Button
+            android:id="@+id/operation_file"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_state_change_item"
+            android:text="打开"
+            android:textColor="@color/custom"
             />
         <TextView
             android:id="@+id/current_speed"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:gravity="center_horizontal"
             android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:visibility="gone"
             android:text="2M/S"
             />
 

@@ -7,6 +7,9 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
+import android.util.SparseBooleanArray;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,7 +39,7 @@ import wfu.com.documentexpress.wifioperation.WifiAdmin;
 /**
  * Created by Lenovo on 2016/5/9.
  */
-public class ReceiveActivity extends BaseActivity  {
+public class ReceiveActivity extends BaseActivity implements AdapterView.OnItemLongClickListener,AdapterView.OnItemClickListener {
     //接收文件的activity，包括接受文件的seversocket
     //给二维码显示界面反馈信息
     private int defaultBindPort = Constant.DEFAULT_BIND_PORT;    //默认监听端口号为10000
@@ -55,6 +58,11 @@ public class ReceiveActivity extends BaseActivity  {
     private ListView transList;
     private Button interrupt_trans;
     private TextView title;
+    private int recCount=0;
+    private int okCount=0;
+
+    private ArrayList checkedList=new ArrayList();
+    private SparseBooleanArray stateCheckedMap=new SparseBooleanArray();
 
 
     private android.os.Handler myhandler = new android.os.Handler(){
@@ -72,11 +80,13 @@ public class ReceiveActivity extends BaseActivity  {
                     waitDialog.dismiss();
                     break;
                 case 0x129:
-                    title.setText("接收完成");
-                    adapter.notifyDataSetChanged();
-                    interrupt_trans.setText("我也要发");
+                    if(recCount==okCount){
+                        title.setText("接收完成");
+                        adapter.notifyDataSetChanged();
+                        interrupt_trans.setText("我也要发");
 //                    interrupt_trans.setBackgroundColor(getResources().getColor(R.color.custom));
-                    interrupt_trans.setBackgroundResource(R.drawable.button_state_change);
+                        interrupt_trans.setBackgroundResource(R.drawable.button_state_change);
+                    }
                     break;
             }
 
@@ -120,10 +130,41 @@ public class ReceiveActivity extends BaseActivity  {
         waitDialog = new WaitDialog(ReceiveActivity.this);
         waitDialog.setContent("正在连接...");
         transFiles = new ArrayList<FileUpdate>();
-        adapter = new FileUpdateAdapter(ReceiveActivity.this,R.layout.file_progress_item,transFiles);
+        adapter = new FileUpdateAdapter(ReceiveActivity.this,R.layout.file_progress_item,transFiles,stateCheckedMap);
         transList.setAdapter(adapter);
+        transList.setOnItemClickListener(this);
+        transList.setOnItemLongClickListener(this);
     }
 
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        if(adapter.isShowCheckBox){
+            FileUpdateAdapter.ViewHolder vh = (FileUpdateAdapter.ViewHolder)view.getTag();
+            vh.cbMultiselect.toggle();
+            transList.setItemChecked(position, vh.cbMultiselect.isChecked());
+            stateCheckedMap.put(position,vh.cbMultiselect.isChecked());
+            //通知更新adapter
+            adapter.notifyDataSetChanged();
+        }else{
+
+        }
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+        if(!adapter.isShowCheckBox){
+            adapter.childCheckedCount=0;
+            FileUpdateAdapter.ViewHolder vh = (FileUpdateAdapter.ViewHolder)view.getTag(); //借助ViewHolder拿到CheckBox控件
+            vh.cbMultiselect.toggle();
+            transList.setItemChecked(position, vh.cbMultiselect.isChecked());
+            stateCheckedMap.put(position,vh.cbMultiselect.isChecked());
+        }
+        adapter.isShowCheckBox=true;
+        //通知更新adapter
+        adapter.notifyDataSetChanged();
+        return true;
+    }
 
     // 是否连接WIFI
     public static boolean isWifiConnected(Context context)
@@ -137,11 +178,11 @@ public class ReceiveActivity extends BaseActivity  {
 
         return false ;
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
+
     //IP转换
     private String intToIp(int paramInt) {
         return (paramInt & 0xFF) + "." + (0xFF & paramInt >> 8) + "." + (0xFF & paramInt >> 16) + "."
@@ -202,7 +243,7 @@ public class ReceiveActivity extends BaseActivity  {
         }
 
         public void run() {
-
+            recCount++;
             System.out.println("New connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
 
             DataInputStream dis = null;
@@ -240,6 +281,7 @@ public class ReceiveActivity extends BaseActivity  {
                 double downloadSpeed = (passedlen / usedTime) / 1024/1024; // 下载速度
                 recfile.setCurrentSpeed(downloadSpeed + "M/S");
                 System.out.println("文件: " + savePath + "接收完成!");
+                okCount++;
                 myhandler.sendEmptyMessage(0x129);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -263,8 +305,16 @@ public class ReceiveActivity extends BaseActivity  {
     }
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(getApplicationContext(),MainActivity.class));
-        finish();
+        if(adapter.isShowCheckBox){
+            for(int i=0;i<transFiles.size();i++){
+                stateCheckedMap.put(i,false);
+            }
+            adapter.isShowCheckBox=false;
+            adapter.notifyDataSetChanged();
+        }else{
+            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+            finish();
+        }
     }
 
 }

@@ -225,19 +225,10 @@ public class FileChooseActivity extends FragmentActivity {
                     Toast.makeText(context, "未选中任何文件", Toast.LENGTH_SHORT).show();
                 } else {
 //                    LogUtil.e("1", choosePath.toString());
-                    switch (MainActivity.express_mode) {
-                        case "WiFi":       Intent intent = new Intent(context, ConnectUserActivity.class);
-                            intent.putExtra("path_list", (Serializable) choosePath);
-                        startActivity(intent);
-                        finish();
-                            break;
-                        case "NFC":
-                            Intent intent1=new Intent(context,NFcExpressActivity.class);
-                            intent1.putExtra("path_list", (Serializable) choosePath);
-                            startActivity(intent1);
-                            finish();
-                            default: break;
-                    }
+                    Intent intent=new Intent(context,ConnectUserActivity.class);
+                    intent.putExtra("path_list", (Serializable) choosePath);
+                    startActivity(intent);
+                    finish();
                 }
             }
         });

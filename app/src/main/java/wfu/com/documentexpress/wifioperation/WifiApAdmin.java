@@ -69,6 +69,83 @@ public class WifiApAdmin {
         timerCheck.start(15, 1000);
 
     }
+    public void startWifiApNoPass(String ssid, String passwd) {
+        mSSID = ssid;
+        mPasswd = passwd;
+
+        if (mWifiManager.isWifiEnabled()) {
+            mWifiManager.setWifiEnabled(false);
+        }
+
+        stratWifiApNoPass();
+
+        MyTimerCheck timerCheck = new MyTimerCheck() {
+
+            @Override
+            public void doTimerCheckWork() {
+                // TODO Auto-generated method stub
+
+                if (isWifiApEnabled(mWifiManager)) {
+                    Log.v(TAG, "Wifi enabled success!");
+                    this.exit();
+                } else {
+                    Log.v(TAG, "Wifi enabled failed!");
+                }
+            }
+
+            @Override
+            public void doTimeOutWork() {
+                // TODO Auto-generated method stub
+                this.exit();
+            }
+        };
+        timerCheck.start(15, 1000);
+
+    }
+    public void stratWifiApNoPass() {
+        Method method1 = null;
+        try {
+            method1 = mWifiManager.getClass().getMethod("setWifiApEnabled",
+                    WifiConfiguration.class, boolean.class);
+            WifiConfiguration netConfig = new WifiConfiguration();
+
+            netConfig.SSID = mSSID;
+            netConfig.preSharedKey = mPasswd;
+
+            netConfig.allowedAuthAlgorithms
+                    .set(WifiConfiguration.AuthAlgorithm.OPEN);
+            netConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+            netConfig.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+            netConfig.allowedKeyManagement
+                    .set(WifiConfiguration.KeyMgmt.NONE);
+            netConfig.allowedPairwiseCiphers
+                    .set(WifiConfiguration.PairwiseCipher.CCMP);
+            netConfig.allowedPairwiseCiphers
+                    .set(WifiConfiguration.PairwiseCipher.TKIP);
+            netConfig.allowedGroupCiphers
+                    .set(WifiConfiguration.GroupCipher.CCMP);
+            netConfig.allowedGroupCiphers
+                    .set(WifiConfiguration.GroupCipher.TKIP);
+
+            method1.invoke(mWifiManager, netConfig, true);
+
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     public void stratWifiAp() {
         Method method1 = null;

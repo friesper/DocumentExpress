@@ -228,7 +228,7 @@ public class blueToothSelectActivity extends FragmentActivity {
                     //Intent intent=new Intent(context,ConnectUserActivity.class);
                     Intent intent=new Intent(context,ConnectUserActivity.class);
                     intent.putExtra("path_list", (Serializable) choosePath);
-                    blueToothSelectActivity.this.setResult(bluetoothClientActivity_express.RESULT_CODE,intent);
+                    blueToothSelectActivity.this.setResult(bluetoothactivity_express.RESULT_CODE,intent);
                     finish();
                 }
             }

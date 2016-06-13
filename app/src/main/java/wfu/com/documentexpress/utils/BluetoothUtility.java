@@ -91,12 +91,12 @@ public class BluetoothUtility {
      * 发送文件
      * @param macAddress 蓝牙地址
      */
-    public void sendFie(String macAddress, String path) {
+    public void sendFile(String macAddress, String path) {
         BluetoothDevice bluetoothDevice = this.bluetoothAdapter.getRemoteDevice(macAddress);
         try {
             Method method = bluetoothDevice.getClass().getMethod("createRfcommSocket",
                     new Class[] {int.class});
-             this.btSocket = (BluetoothSocket) method.invoke(bluetoothDevice, 1);
+            // this.btSocket = (BluetoothSocket) method.invoke(bluetoothDevice, 1);
             method.invoke(bluetoothDevice, 1);
             ContentValues cv = new ContentValues();
             // 文件名字是 file:// + 文件名，这个地方需要注意 多加 /
