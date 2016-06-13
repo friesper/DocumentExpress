@@ -29,7 +29,7 @@ import wfu.com.documentexpress.utils.TextRecord;
 /**
  * Created by sion on 2016/5/21.
  */
-public class NFcExpressActivity  extends Activity implements NfcAdapter.CreateNdefMessageCallback,NfcAdapter.OnNdefPushCompleteCallback {
+public class NFcExpressActivity  extends BaseActivity implements NfcAdapter.CreateNdefMessageCallback,NfcAdapter.OnNdefPushCompleteCallback {
     private    NfcAdapter  nfcAdapter;
     private PendingIntent pendingIntent;
     @Override

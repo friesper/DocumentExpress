@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 import wfu.com.documentexpress.R;
+import wfu.com.documentexpress.activity.MainActivity;
 import wfu.com.documentexpress.libzxing.zxing.camera.CameraManager;
 import wfu.com.documentexpress.libzxing.zxing.decode.DecodeThread;
 import wfu.com.documentexpress.libzxing.zxing.utils.BeepManager;
@@ -310,5 +311,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             e.printStackTrace();
         }
         return 0;
+    }
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

@@ -18,6 +18,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -152,13 +153,15 @@ public class FileChooseActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actvity_filechoose);
         context = getApplicationContext();
-        if (savedInstanceState == null) {
+       if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment()).commit();
         }
         loadMessage();
         initView();
+        Log.d("debug","initView");
         initEvent();
+        Log.d("debug","initEvent");
 
     }
 

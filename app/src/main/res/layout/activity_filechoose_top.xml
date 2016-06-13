@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="#33b5e5"
-    android:layout_height="50dp">
+    android:background="#fff"
+    android:layout_height="40dp">
     <LinearLayout
         android:id="@+id/back_layout"
         android:orientation="horizontal"
-        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_width="wrap_content"
         android:layout_height="35dp">
@@ -14,17 +13,10 @@
             android:background="@drawable/back_press"
             android:layout_width="19dp"
             android:layout_height="match_parent" />
-        <TextView
-            android:text="@string/back"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:textColor="#fff"
-            android:textSize="20dp"
-            android:layout_height="25dp" />
     </LinearLayout>
     <TextView
         android:text="@string/choosefile"
-        android:textColor="#fff"
+        android:textColor="#000"
         android:textSize="23dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"

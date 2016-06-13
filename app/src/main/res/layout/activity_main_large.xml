@@ -2,10 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true"
-    android:clipToPadding="true"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 <include layout="@layout/tool_bar"/>
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawerlayout"
@@ -18,25 +16,38 @@
         android:layout_height="match_parent"
         android:layout_marginTop="30dp"
         >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_centerHorizontal="true">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+               <Button
+                   android:layout_gravity="center"
+                   android:layout_width="200dp"
+                   android:layout_height="200dp"
+
+                   android:id="@+id/send_file"
+                   android:maxHeight="0dp"
+                   android:minHeight="0dp"
+                   android:maxWidth="0dp"
+                   android:text="@string/button_send_text"
+                   android:minWidth="0dp"
+                   android:background="@drawable/send_file_button"
+                   android:layout_alignParentTop="true"
+                   android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
         <Button
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            android:id="@+id/send_file"
-            android:maxHeight="0dp"
-            android:minHeight="0dp"
-            android:maxWidth="0dp"
-            android:text="@string/button_send_text"
-            android:minWidth="0dp"
-            android:background="@drawable/send_file_button"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
-            />
-        <Button
-            android:layout_width="160dp"
-            android:layout_height="160dp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:id="@+id/recieve_file"
-            android:layout_below="@id/send_file"
-            android:layout_margin="30dp"
             android:text="@string/button_recieve"
             android:maxHeight="0dp"
             android:minHeight="0dp"
@@ -44,8 +55,8 @@
             android:minWidth="0dp"
             android:background="@drawable/send_file_button"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
-            />
+            /></RelativeLayout>
+        </LinearLayout>
     </RelativeLayout>
 <LinearLayout
     android:layout_width="match_parent"

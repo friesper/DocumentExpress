@@ -9,9 +9,9 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.provider.Settings;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.internal.widget.AdapterViewCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -28,6 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.way.app.FTPActivity;
+
 import java.io.File;
 
 import wfu.com.documentexpress.R;
@@ -40,9 +42,9 @@ import wfu.com.documentexpress.wifioperation.WifiApAdmin;
 
 public class MainActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
     private WifiAdmin wifiAdmin;
-    private  Button  send_file=null;
+    private Button send_file=null;
     private static final String special_prefix = "docexp";
-    private  Button   recieve_file=null;
+    private Button recieve_file=null;
     private  SwitchCompat setting_sound=null;
     private  SwitchCompat setting_vibration=null;
     private  TextView  show_dir;
@@ -68,16 +70,24 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
             @Override
             public void onClick(View v) {//开始发送文件的Activity
                 switch (express_mode) {
-                    case "WiFi" :  Intent intent = new Intent(getApplicationContext(), FileChooseActivity.class);
+                    case "WiFi" :
+                       Intent intent = new Intent(getApplicationContext(), FileChooseActivity.class);
                     startActivity(intent);
                         break;
                     case  "蓝牙":
-                        Intent  intent1=new Intent(MainActivity.this,BlueToothActivity.class);
-                        startActivity(intent1);
+                        Intent  intent_Bluetooth=new Intent(MainActivity.this,BlueToothActivity.class);
+                        startActivity(intent_Bluetooth);
                         break;
                     case "NFC":
-                        Intent  intent2=new Intent(MainActivity.this, FileChooseActivity.class);
-                    default:break;
+                        Intent  intent_NFC=new Intent(MainActivity.this, FileChooseActivity.class);
+                        startActivity(intent_NFC);
+                        break;
+                    case "FTP":
+                        Intent  intent_FTP=new Intent(MainActivity.this,FTPActivity.class);
+                        startActivity(intent_FTP);
+                        break;
+                    default:
+                        break;
                 }
             }
         });
@@ -92,6 +102,13 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                     case "蓝牙":Intent  intent_bluetooth=new Intent(MainActivity.this,BlueToothActivity.class);
                         startActivity(intent_bluetooth);
                         break;
+                    case "NFC":
+                        Intent  intent2=new Intent(MainActivity.this, NFcExpressActivity.class);
+                        startActivity(intent2);
+                        break;
+                    case "FTP":
+
+                        break;
                     default:break;
 
                 }
@@ -100,11 +117,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(i==0){
 
-
-                    return;
-                }
                     String[] languagess = getResources().getStringArray(R.array.languages);
                     express_mode = languagess[i];
                     express_mode_num=i;
@@ -204,18 +217,8 @@ void  initView(){/*
                 */
     DisplayMetrics metrics = new DisplayMetrics();
     getWindowManager().getDefaultDisplay();
-    float density = metrics.density;
-    if(density>1.5){
-        setContentView(R.layout.activity_main_normal);
-    }
-    else  if(density <= 0.8) {
         setContentView(R.layout.activity_main_large);
 
-    }
-    else  setContentView(R.layout.activity_main_largest);
-        /*
-        * 绘制Materl  Design  的TOOLBar
-        * */
     dirPath=SharepreferencesUtilSystemSettings.SETTING;
     wifiAdmin = new WifiAdmin(MainActivity.this);
 
@@ -238,6 +241,7 @@ void  initView(){/*
 
     mActionBarDrawerToggle.syncState();
     mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
+
     send_file=(Button)findViewById(R.id.send_file);
     recieve_file=(Button)findViewById(R.id.recieve_file);
 
@@ -258,7 +262,6 @@ void  initView(){/*
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 //绑定 Adapter到控件
     spinner .setAdapter(adapter);
-    spinner.setSelection(0,true);
     initsetting();
 
     spinner.setSelection(express_mode_num);

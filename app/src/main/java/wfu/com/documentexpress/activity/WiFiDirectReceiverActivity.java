@@ -32,7 +32,7 @@ import wfu.com.documentexpress.view.WaitDialog;
 /**
  * Created by yinxucun on 16-5-31.
  */
-public class WiFiDirectReceiverActivity extends Activity {
+public class WiFiDirectReceiverActivity extends BaseActivity {
     //接收文件的activity，包括接受文件的seversocket
     //给二维码显示界面反馈信息
     private int defaultBindPort = Constant.DEFAULT_BIND_PORT;    //默认监听端口号为10000

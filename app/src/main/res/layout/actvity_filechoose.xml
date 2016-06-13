@@ -7,7 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="37dp"
+    android:layout_height="35dp"
     tools:context="wfu.com.documentexpress.activity.FileChooseActivity"
     tools:ignore="MergeRootFrame" >
     </FrameLayout>
@@ -44,8 +44,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:background="@drawable/send_file"
         android:textColor="#fff"
+        android:background="@drawable/button_state_change"
         android:text="@string/send"
         android:textSize="20dp"
     />

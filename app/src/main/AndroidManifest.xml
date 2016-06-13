@@ -29,16 +29,11 @@
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
         <activity android:name=".activity.DirChosseActivity"/>
         <activity android:name=".activity.BlueToothActivity"/>
-        <activity android:name=".activity.blueToothSelectActivity"/>
         <activity android:name=".activity.ConnectUserActivity"/>
         <activity android:name=".activity.BaseActivity"/>
         <activity android:name=".activity.FileChooseActivity"/>
@@ -46,6 +41,13 @@
         <activity android:name=".activity.WiFiConnectActivity"/>
         <activity android:name=".activity.SendActivity">
 
+        </activity>
+        <activity android:name=".activity.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <service android:name=".Server.BluetoothServerService"></service>

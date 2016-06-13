@@ -6,8 +6,8 @@
     <string name="cancel">取消</string>
     <string name="app_name">DocumentExpress</string>
     <string name="action_settings">Settings</string>
-    <string name="button_send_text">发文件</string>
-    <string name="button_recieve">收文件</string>
+    <string name="button_send_text">发送</string>
+    <string name="button_recieve">接手</string>
     <string name="setting">设置</string>
     <string name="about">关于</string>
     <string name="loading">正在连接...</string>

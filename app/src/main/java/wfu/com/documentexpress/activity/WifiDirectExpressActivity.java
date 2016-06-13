@@ -28,7 +28,7 @@ import wfu.com.documentexpress.utils.WIFIDirectBroadCastReceiver;
 /**
  * Created by sion on 2016/5/25.
  */
-public class WifiDirectExpressActivity extends Activity {
+public class WifiDirectExpressActivity extends BaseActivity {
     private  WifiP2pManager  wifiP2pManager;
     private  WifiP2pManager.Channel mChannel;
     private WifiP2pInfo info;

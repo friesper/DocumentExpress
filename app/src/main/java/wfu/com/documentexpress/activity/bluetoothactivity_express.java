@@ -22,7 +22,7 @@ import wfu.com.documentexpress.Server.SelectFileActivity;
 import wfu.com.documentexpress.Server.TransmitBean;
 
 
-public class bluetoothactivity_express extends Activity {
+public class bluetoothactivity_express extends BaseActivity {
 
 	public static final int RESULT_CODE = 1000;    //选择文件   请求码
 	public static final String SEND_FILE_NAME = "sendFileName";

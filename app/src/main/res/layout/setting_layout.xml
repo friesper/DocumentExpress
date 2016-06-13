@@ -69,6 +69,8 @@
 
     </LinearLayout>
     <LinearLayout
+        android:divider="@color/sc_black"
+        android:dividerPadding="@dimen/much"
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_height="wrap_content"
@@ -93,7 +95,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/button_exit"
-        android:background="@color/blue_exit"
         android:text="@string/button_exit"
         />
 </LinearLayout>

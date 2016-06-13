@@ -4,5 +4,7 @@
         <item>WiFi</item>
         <item>蓝牙 </item>
         <item>数据流量</item>
+        <item>NFC</item>
+        <item>FTP</item>
     </string-array>
 </resources>
