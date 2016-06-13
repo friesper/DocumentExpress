@@ -74,24 +74,8 @@ public class bluetoothactivity_express extends Activity {
 			}
 		});
 		
-		sendBtn = (Button)findViewById(R.id.clientSendMsgBtn);
-		sendBtn.setOnClickListener(new OnClickListener() {		
-			@Override
-			public void onClick(View v) {
-				//发送消息
-				if ("".equals(sendEditText.getText().toString().trim())) {
-					Toast.makeText(bluetoothactivity_express.this, "输入不能为空", Toast.LENGTH_SHORT).show();
-				} else {
-					//发送消息
-					TransmitBean data = new TransmitBean();
-					data.setMsg(sendEditText.getText().toString());
-					Intent sendDataIntent = new Intent(BluetoothTools.ACTION_DATA_TO_SERVICE);
-					sendDataIntent.putExtra(BluetoothTools.DATA, data);
-					sendBroadcast(sendDataIntent);
-					sendEditText.setText("");
-				}
-			}
-		});
+
+
 		
 		filesendBtn = (Button)findViewById(R.id.fileSendBtn);
 		filesendBtn.setOnClickListener(new OnClickListener() {		

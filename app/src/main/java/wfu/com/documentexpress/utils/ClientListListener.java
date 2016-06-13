@@ -119,6 +119,7 @@ public class ClientListListener {
                 intent.setClassName(ClientActivity,"wfu.com.documentexpress.activity.bluetoothactivity_express");
                 intent.putExtra("deviceAddress", device.getAddress());
                 ClientActivity.startActivity(intent);
+                ClientActivity.finish();
             }
         });
         this.bondDevicesListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

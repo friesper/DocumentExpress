@@ -27,7 +27,7 @@ import wfu.com.documentexpress.utils.ClientListListener;
 /**
  * Created by yinxucun on 16-6-11.
  */
-public class BlueToothActivity extends Activity {
+public class BlueToothActivity extends BaseActivity {
     private Button SearchBtn;
     private static final String tag = "debug";
     private static final int  REQUEST_DISCOVERABLE_BLUETOOTH = 3;

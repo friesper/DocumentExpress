@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.ContactsContract;
@@ -16,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -25,6 +27,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import java.io.File;
 
 import wfu.com.documentexpress.R;
 import wfu.com.documentexpress.libzxing.zxing.activity.CaptureActivity;
@@ -70,6 +74,8 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                         Intent  intent1=new Intent(MainActivity.this,BlueToothActivity.class);
                         startActivity(intent1);
                         break;
+                    case "NFC":
+                        Intent  intent2=new Intent(MainActivity.this, FileChooseActivity.class);
                     default:break;
                 }
             }
@@ -206,6 +212,8 @@ void  initView(){/*
             super.onDrawerClosed(drawerView);
         }
     };
+
+
     mActionBarDrawerToggle.syncState();
     mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
     send_file=(Button)findViewById(R.id.send_file);
