@@ -116,7 +116,7 @@ public class ClientListListener {
                 Intent selectDeviceIntent = new Intent(BluetoothTools.ACTION_SELECTED_DEVICE);
                 selectDeviceIntent.putExtra(BluetoothTools.DEVICE, device);
                 ClientActivity.sendBroadcast(selectDeviceIntent);
-                intent.setClassName(ClientActivity,"wfu.com.documentexpress.activity.bluetoothClientActivity_express");
+                intent.setClassName(ClientActivity,"wfu.com.documentexpress.activity.bluetoothactivity_express");
                 intent.putExtra("deviceAddress", device.getAddress());
                 ClientActivity.startActivity(intent);
             }

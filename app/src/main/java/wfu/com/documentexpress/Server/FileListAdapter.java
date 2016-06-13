@@ -11,7 +11,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ds.bluetooth.R;
+import wfu.com.documentexpress.R;
+
 
 public class FileListAdapter extends BaseAdapter{
 	private LayoutInflater mLayoutInflater;

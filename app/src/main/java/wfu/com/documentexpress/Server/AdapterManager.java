@@ -9,6 +9,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import wfu.com.documentexpress.R;
+
 
 /**
  * 适配器管理器

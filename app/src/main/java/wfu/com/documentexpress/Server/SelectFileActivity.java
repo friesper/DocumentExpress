@@ -19,9 +19,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import com.ds.bluetooth.ClientActivity2;
-import com.ds.bluetooth.R;
+import wfu.com.documentexpress.R;
+import wfu.com.documentexpress.activity.bluetoothactivity_express;
 
 
 public class SelectFileActivity extends Activity {
@@ -143,8 +142,8 @@ public class SelectFileActivity extends Activity {
 			}
 			//将选择的文件的全路径 返回
 			Intent intent = new Intent();
-			intent.putExtra(ClientActivity2.SEND_FILE_NAME, file.getAbsolutePath());
-			SelectFileActivity.this.setResult(ClientActivity2.RESULT_CODE, intent);
+			intent.putExtra(bluetoothactivity_express.SEND_FILE_NAME, file.getAbsolutePath());
+			SelectFileActivity.this.setResult(bluetoothactivity_express.RESULT_CODE, intent);
 			SelectFileActivity.this.finish();
 		}
 	};
