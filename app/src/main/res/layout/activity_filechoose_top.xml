@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="35dp">
         <ImageView
+            android:layout_margin="5dp"
             android:background="@drawable/back_press"
             android:layout_width="19dp"
             android:layout_height="match_parent" />

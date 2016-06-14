@@ -133,7 +133,7 @@ public class ConnectUserActivity extends BaseActivity {
             String qrInfo = ssid+special_flag+password;
 //            LogUtil.e("1",qrInfo);
             Bitmap qrCodeBitmap = EncodingUtils.createQRCode(Base64.getBase64(qrInfo),500, 500,
-                            BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)
+                            BitmapFactory.decodeResource(getResources(), R.mipmap.icon)
                            );
             imageView.setImageBitmap(qrCodeBitmap);
 

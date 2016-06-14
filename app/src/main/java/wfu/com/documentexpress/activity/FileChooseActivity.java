@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -69,7 +70,7 @@ public class FileChooseActivity extends FragmentActivity {
     private boolean isChice[];
     private boolean isroot = true;
     private List<String> choosePath;
-    private Button send;
+    private FloatingActionButton send;
     private LinearLayout backLayout;
     //当前父文件夹
     private static File currentParent;
@@ -151,13 +152,18 @@ public class FileChooseActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("debug","onCreate");
+
         setContentView(R.layout.actvity_filechoose);
+        Log.d("debug","setContentView");
         context = getApplicationContext();
        if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment()).commit();
         }
+        Log.d("debug","getSup");
         loadMessage();
+        Log.d("debug","loadMessage");
         initView();
         Log.d("debug","initView");
         initEvent();
@@ -192,7 +198,7 @@ public class FileChooseActivity extends FragmentActivity {
         fileList = (ListView) findViewById(R.id.file_list);
         address = (TextView) findViewById(R.id.file_address);
         imageList = (GridView) findViewById(R.id.grid);
-        send = (Button) findViewById(R.id.file_send);
+        send = (FloatingActionButton) findViewById(R.id.file_send);
         backLayout = (LinearLayout) findViewById(R.id.back_layout);
         choosePath = new ArrayList<String>();
         //将listview隐藏

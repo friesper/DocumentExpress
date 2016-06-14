@@ -1,6 +1,7 @@
 package wfu.com.documentexpress.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,6 +12,7 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,6 +33,8 @@ import wfu.com.documentexpress.adapter.FileUpdateAdapter;
 import wfu.com.documentexpress.model.FileUpdate;
 import wfu.com.documentexpress.socketoperation.AcceptScanOk;
 import wfu.com.documentexpress.socketoperation.Constant;
+import wfu.com.documentexpress.utils.DialogUtil;
+import wfu.com.documentexpress.utils.FileOperation;
 import wfu.com.documentexpress.utils.FileSizeUtil;
 import wfu.com.documentexpress.utils.LogUtil;
 import wfu.com.documentexpress.view.WaitDialog;
@@ -39,7 +43,7 @@ import wfu.com.documentexpress.wifioperation.WifiAdmin;
 /**
  * Created by Lenovo on 2016/5/9.
  */
-public class ReceiveActivity extends BaseActivity implements AdapterView.OnItemLongClickListener,AdapterView.OnItemClickListener {
+public class ReceiveActivity extends BaseActivity implements AdapterView.OnItemLongClickListener,AdapterView.OnItemClickListener,View.OnClickListener {
     //接收文件的activity，包括接受文件的seversocket
     //给二维码显示界面反馈信息
     private int defaultBindPort = Constant.DEFAULT_BIND_PORT;    //默认监听端口号为10000
@@ -58,6 +62,8 @@ public class ReceiveActivity extends BaseActivity implements AdapterView.OnItemL
     private ListView transList;
     private Button interrupt_trans;
     private TextView title;
+    private LinearLayout showOp;
+    private Button delFile;
     private int recCount=0;
     private int okCount=0;
 
@@ -126,6 +132,8 @@ public class ReceiveActivity extends BaseActivity implements AdapterView.OnItemL
         title = (TextView) findViewById(R.id.trans_title);
         interrupt_trans = (Button) findViewById(R.id.interrupt_trans);
         transList = (ListView) findViewById(R.id.transing_filelist);
+        showOp = (LinearLayout) findViewById(R.id.show_file_op);
+        delFile = (Button) findViewById(R.id.delete_file);
         wifiAdmin = new WifiAdmin(ReceiveActivity.this);
         waitDialog = new WaitDialog(ReceiveActivity.this);
         waitDialog.setContent("正在连接...");
@@ -134,6 +142,7 @@ public class ReceiveActivity extends BaseActivity implements AdapterView.OnItemL
         transList.setAdapter(adapter);
         transList.setOnItemClickListener(this);
         transList.setOnItemLongClickListener(this);
+        delFile.setOnClickListener(this);
     }
 
 
@@ -153,6 +162,7 @@ public class ReceiveActivity extends BaseActivity implements AdapterView.OnItemL
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+        showOp.setVisibility(View.VISIBLE);
         if(!adapter.isShowCheckBox){
             adapter.childCheckedCount=0;
             FileUpdateAdapter.ViewHolder vh = (FileUpdateAdapter.ViewHolder)view.getTag(); //借助ViewHolder拿到CheckBox控件
@@ -229,6 +239,23 @@ public class ReceiveActivity extends BaseActivity implements AdapterView.OnItemL
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.delete_file:
+                DialogUtil.showDialog(ReceiveActivity.this, "确定要删除么？", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int position) {
+                        for(int i = 0 ; i < checkedList.size() ;i++){
+                            //将选择的文件删除，checkedlist为选择的文件路径
+                            FileOperation.deleteFile(checkedList.get(i).toString());
+                        }
+                    }
+                });
+                break;
         }
     }
 
@@ -310,7 +337,8 @@ public class ReceiveActivity extends BaseActivity implements AdapterView.OnItemL
                 stateCheckedMap.put(i,false);
             }
             adapter.isShowCheckBox=false;
-            adapter.notifyDataSetChanged();
+            transList.invalidate();
+            showOp.setVisibility(View.GONE);
         }else{
             startActivity(new Intent(getApplicationContext(),MainActivity.class));
             finish();

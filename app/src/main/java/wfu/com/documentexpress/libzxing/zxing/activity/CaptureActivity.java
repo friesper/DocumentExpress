@@ -46,6 +46,7 @@ import wfu.com.documentexpress.libzxing.zxing.decode.DecodeThread;
 import wfu.com.documentexpress.libzxing.zxing.utils.BeepManager;
 import wfu.com.documentexpress.libzxing.zxing.utils.CaptureActivityHandler;
 import wfu.com.documentexpress.libzxing.zxing.utils.InactivityTimer;
+import wfu.com.documentexpress.utils.DialogUtil;
 
 /**
  * This activity opens the camera and does the actual scanning on a background
@@ -161,6 +162,17 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     protected void onDestroy() {
         inactivityTimer.shutdown();
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        DialogUtil.showDialog(CaptureActivity.this, "您确定要取消本次传输吗？", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                finish();
+            }
+        });
     }
 
     @Override
@@ -311,9 +323,5 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             e.printStackTrace();
         }
         return 0;
-    }
-    @Override
-    public void onBackPressed() {
-        finish();
     }
 }
